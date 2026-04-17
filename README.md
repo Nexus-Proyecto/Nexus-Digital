@@ -26,3 +26,17 @@ Además, existen obstáculos para concretar ventas de proximidad de forma organi
 
 ## Propuesta de Valor
 Nexus Digital ofrece una solución accesible y centralizada para el comercio local en Córdoba, la plataforma facilita la visibilidad de productos, promueve las ventas de proximidad y mejora la confianza entre compradores y vendedores mediante un entorno digital simple, seguro y organizado.
+## Aportes del equipo
+
+### 👤 Maria Soledad Scarlata
+#### Requerimientos No Funcionales
+
+**Seguridad**
+- Uso de HTTPS  
+- Encriptación de contraseñas con PBKDF2 (Django)
+
+**Usabilidad**
+- Interfaz responsive (Bootstrap)
+
+**Mantenibilidad**
+- Separación entre frontend (Angular) y backend (Django REST Framework)
