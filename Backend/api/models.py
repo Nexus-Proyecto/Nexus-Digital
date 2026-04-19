@@ -6,8 +6,6 @@ class Producto(models.Model):
     descripcion = models.TextField(blank=True, null=True)
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.PositiveIntegerField(default=0)
-    
-    # Estos campos ayudan a ver cuándo se creó/editó
     creado_en = models.DateTimeField(auto_now_add=True)
     actualizado_en = models.DateTimeField(auto_now=True)
 
