@@ -28,6 +28,42 @@ Además, existen obstáculos para concretar ventas de proximidad de forma organi
 Nexus Digital ofrece una solución accesible y centralizada para el comercio local en Córdoba, la plataforma facilita la visibilidad de productos, promueve las ventas de proximidad y mejora la confianza entre compradores y vendedores mediante un entorno digital simple, seguro y organizado.
 
 
+## Tecnologías Utilizadas
+- Frontend: Angular  
+- Backend: Django Rest Framework  
+- Base de Datos: MySQL  
+
+
+## Instalación
+
+### Requisitos previos
+- Node.js y npm (para Angular)
+- Python 3.x
+- Django y Django REST Framework
+- MySQL
+
+### Backend (Django)
+1. Clonar el repositorio:
+git clone URL_DEL_REPO
+
+2. Entrar al backend:
+cd backend
+
+3. Crear entorno virtual:
+python -m venv venv
+
+4. Activar entorno:
+- Windows: venv\Scripts\activate  
+- Linux/Mac: source venv/bin/activate
+
+5. Instalar dependencias:
+pip install -r requirements.txt
+
+6. Ejecutar servidor:
+python manage.py runserver
+
+
+
 ## Requerimientos Funcionales
 
 ### Registro e inicio de sesión de usuarios
@@ -49,16 +85,15 @@ Genera una orden de compra a partir del carrito.
 Permite visualizar compras realizadas.
 
 
- Requerimiento no funcionales
+ 
+## Requerimiento no funcionales
 
-
-
-**Seguridad**
+### Seguridad
 - Uso de HTTPS  
 - Encriptación de contraseñas con PBKDF2 (Django)
 
-**Usabilidad**
+### Usabilidad
 - Interfaz responsive (Bootstrap)
 
-**Mantenibilidad**
+### Mantenibilidad
 - Separación entre frontend (Angular) y backend (Django REST Framework)
