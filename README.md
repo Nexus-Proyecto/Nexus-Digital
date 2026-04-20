@@ -19,6 +19,7 @@ Nexus Digital es una plataforma de compra y venta de productos a nivel local en 
 Permite a los usuarios registrarse, publicar productos, explorar ofertas y realizar compras de manera simple, fomentando el comercio de proximidad.
 
 
+
 ## Uso
 La plataforma permite a los usuarios:
 - Registrarse e iniciar sesión  
@@ -27,3 +28,28 @@ La plataforma permite a los usuarios:
 - Agregar productos al carrito  
 - Realizar compras  
 - Ver historial de compras
+
+## Problema que Resuelve
+En la provincia de Córdoba, muchos emprendedores, comerciantes locales y particulares enfrentan dificultades para visibilizar sus productos en el entorno digital, lo que limita sus oportunidades de venta.
+
+Además, existen obstáculos para concretar ventas de proximidad de forma organizada y generar confianza con potenciales compradores, debido a la falta de plataformas accesibles y orientadas específicamente al comercio local.
+
+
+
+## Propuesta de Valor
+Nexus Digital ofrece una solución accesible y centralizada para el comercio local en Córdoba, la plataforma facilita la visibilidad de productos, promueve las ventas de proximidad y mejora la confianza entre compradores y vendedores mediante un entorno digital simple, seguro y organizado.
+
+ Requerimiento no funcionales
+
+
+
+**Seguridad**
+- Uso de HTTPS  
+- Encriptación de contraseñas con PBKDF2 (Django)
+
+**Usabilidad**
+- Interfaz responsive (Bootstrap)
+
+**Mantenibilidad**
+- Separación entre frontend (Angular) y backend (Django REST Framework)
+
