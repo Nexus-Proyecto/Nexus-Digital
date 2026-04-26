@@ -20,15 +20,6 @@ Permite a los usuarios registrarse, publicar productos, explorar ofertas y reali
 
 
 
-## Uso
-La plataforma permite a los usuarios:
-- Registrarse e iniciar sesión  
-- Publicar productos  
-- Buscar productos  
-- Agregar productos al carrito  
-- Realizar compras  
-- Ver historial de compras
-
 ## Problema que Resuelve
 En la provincia de Córdoba, muchos emprendedores, comerciantes locales y particulares enfrentan dificultades para visibilizar sus productos en el entorno digital, lo que limita sus oportunidades de venta.
 
@@ -74,6 +65,15 @@ pip install -r requirements.txt
 6. Ejecutar servidor:
 python manage.py runserver
 
+
+## Uso
+La plataforma permite a los usuarios:
+- Registrarse e iniciar sesión  
+- Publicar productos  
+- Buscar productos  
+- Agregar productos al carrito  
+- Realizar compras  
+- Ver historial de compras
 
 
 ## Requerimientos Funcionales
