@@ -1,0 +1,29 @@
+<div class="dashboard-page">
+
+  <div class="dashboard-header">
+
+    <h1>Dashboard</h1>
+
+    <p class="rol">
+      {{ rol }}
+    </p>
+
+    <button (click)="cambiarRol()">
+
+      Cambiar Rol
+
+    </button>
+
+  </div>
+
+  @if (rol === 'admin') {
+
+    <app-dashboard-admin />
+
+  } @else {
+
+    <app-dashboard-user />
+
+  }
+
+</div>
