@@ -8,7 +8,8 @@
 - Augusto Andrés Raffaeli  
 - Yohana Eugenia Grosso  
 - Griselda Leonor Aguirre  
-- Scarlata María Soledad  
+- Scarlata María Soledad 
+- Juan Ignacio Alonso 
 
 
 
@@ -16,6 +17,8 @@
 Nexus Digital es una plataforma de compra y venta de productos a nivel local en la provincia de Córdoba, inspirada en modelos como Mercado Libre.
 
 Permite a los usuarios registrarse, publicar productos, explorar ofertas y realizar compras de manera simple, fomentando el comercio de proximidad.
+
+
 
 ## Problema que Resuelve
 En la provincia de Córdoba, muchos emprendedores, comerciantes locales y particulares enfrentan dificultades para visibilizar sus productos en el entorno digital, lo que limita sus oportunidades de venta.
@@ -32,7 +35,6 @@ Nexus Digital ofrece una solución accesible y centralizada para el comercio loc
 - Frontend: Angular  
 - Backend: Django Rest Framework  
 - Base de Datos: MySQL  
-
 
 
 ## Instalación
@@ -63,15 +65,61 @@ pip install -r requirements.txt
 6. Ejecutar servidor:
 python manage.py runserver
 
+### Frontend (Angular)
 
-## Requerimiento no funcionales
+1. Ingresar a carpet Frontend
+cd frontend
 
-**Seguridad**
-- Uso de HTTPS  
-- Encriptación de contraseñas con PBKDF2 (Django)
+2. Instalar dependencias
+npm install
 
-**Usabilidad**
-- Interfaz responsive (Bootstrap)
+3. Ejecutar aplicación
+ng serve
 
-**Mantenibilidad**
-- Separación entre frontend (Angular) y backend (Django REST Framework)
+4. Abrir en navegador
+http://localhost:4200
+
+
+
+## Uso
+La plataforma permite a los usuarios:
+- Registrarse e iniciar sesión  
+- Publicar productos  
+- Buscar productos  
+- Agregar productos al carrito  
+- Realizar compras  
+- Ver historial de compras
+
+
+## Requerimientos Funcionales
+
+| Código | Requisito Funcional |
+|--------|--------------------|
+| RF01 | El sistema debe permitir a los usuarios registrarse ingresando sus datos personales y credenciales, así como iniciar sesión para acceder a su cuenta. |
+| RF02 | El sistema debe permitir a los usuarios crear, editar y eliminar productos, ingresando nombre, descripción, precio y stock. |
+| RF03 | El sistema debe permitir a los usuarios buscar productos por nombre y aplicar filtros por categoría y rango de precios. |
+| RF04 | El sistema debe permitir a los usuarios agregar productos al carrito, modificar cantidades y eliminar productos previamente agregados. |
+| RF05 | El sistema debe permitir a los usuarios confirmar la compra de los productos del carrito, generando una orden de compra. |
+| RF06 | El sistema debe permitir a los usuarios visualizar el historial de compras realizadas. |
+| RF07 | El sistema debe permitir a los usuarios visualizar el detalle de cada producto, incluyendo descripción, precio y disponibilidad. |
+| RF08 | El sistema debe permitir a los usuarios visualizar un resumen del carrito con el total de la compra antes de confirmarla. |
+
+---
+
+## Requerimientos No Funcionales
+
+| Código | Requisito No Funcional |
+|--------|------------------------|
+| RNF01 | El sistema debe ser responsive, garantizando su correcto funcionamiento en dispositivos móviles, tablets y computadoras. |
+| RNF02 | El sistema debe garantizar la seguridad de los datos personales mediante el uso de cifrado de contraseñas y buenas prácticas de seguridad. |
+| RNF03 | El sistema debe estar estructurado de forma modular y organizada, facilitando su mantenimiento, escalabilidad y futuras actualizaciones. |
+| RNF04 | El sistema debe ofrecer una interfaz intuitiva y fácil de usar, permitiendo a los usuarios navegar y realizar acciones sin dificultad. |
+| RNF05 | El sistema debe responder a las solicitudes del usuario en un tiempo adecuado, garantizando una experiencia fluida. |
+
+
+
+## Documentación
+
+[Wiki del Proyecto](https://github.com/Nexus-Proyecto/Nexus-Digital/wiki/Documentaci%C3%B3n-y-Enlaces)
+
+
