@@ -1,0 +1,40 @@
+<div class="card shadow-sm p-4 mt-5">
+  <h3 class="text-center mb-4 text-primary">Contacto</h3>
+  
+  <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label class="form-label">Nombre Completo</label>
+      <input type="text" formControlName="nombre" class="form-control" 
+             [class.is-invalid]="f['nombre'].invalid && f['nombre'].touched">
+      
+      <div class="invalid-feedback">
+        <span *ngIf="f['nombre'].errors?.['required']">El nombre es obligatorio.</span>
+        <span *ngIf="f['nombre'].errors?.['minlength']">Debe tener al menos 3 caracteres.</span>
+        <span *ngIf="f['nombre'].errors?.['pattern']">Solo se permiten letras (sin números ni símbolos).</span>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Correo Electrónico</label>
+      <input type="email" formControlName="email" class="form-control"
+             [class.is-invalid]="f['email'].invalid && f['email'].touched">
+      <div class="invalid-feedback">
+        Ingresá un formato de email válido (ejemplo@correo.com).
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Mensaje</label>
+      <textarea formControlName="mensaje" class="form-control" rows="3"
+                [class.is-invalid]="f['mensaje'].invalid && f['mensaje'].touched"></textarea>
+      <div class="invalid-feedback">
+        <span *ngIf="f['mensaje'].errors?.['required']">El mensaje no puede estar vacío.</span>
+        <span *ngIf="f['mensaje'].errors?.['maxlength']">Máximo 200 caracteres.</span>
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="contactForm.invalid" class="btn btn-primary w-100 shadow-sm">
+      Enviar Mensaje
+    </button>
+  </form>
+</div>
