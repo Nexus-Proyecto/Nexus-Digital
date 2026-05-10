@@ -1,6 +1,21 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
-    <a class="navbar-brand" href="#">Nexus Digital</a>
+    <a class="navbar-brand" routerLink="/">Nexus Digital</a>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/quienes-somos" routerLinkActive="active">Quiénes Somos</a>
+        </li>
+      </ul>
+    </div>
   </div>
 </nav>
 <header class="bg-primary text-white text-center p-4">
@@ -8,60 +23,7 @@
   <p>Compra y venta local en Córdoba</p>
 </header>
 
-<!-- HERO -->
-<section class="bg-light text-center p-5">
-  <h2>Comprá y vendé cerca tuyo</h2>
-  <p>Publicá productos, encontrá ofertas y conectá con vendedores locales.</p>
-  <button class="btn btn-primary m-2">Explorar productos</button>
-  <button class="btn btn-outline-primary m-2">Publicar producto</button>
-</section>
-
-<!-- BENEFICIOS -->
-<section class="container my-5 text-center">
-  <h2 class="mb-4">¿Por qué elegir Nexus Digital?</h2>
-  <div class="row">
-    <div class="col-md-4">
-      <h4>📍 Comercio local</h4>
-      <p>Comprá y vendé dentro de la provincia de Córdoba.</p>
-    </div>
-    <div class="col-md-4">
-      <h4>💻 Fácil de usar</h4>
-      <p>Publicá productos en pocos pasos.</p>
-    </div>
-    <div class="col-md-4">
-      <h4>🛒 Variedad</h4>
-      <p>Explorá múltiples categorías y ofertas.</p>
-    </div>
-  </div>
-</section>
-
-<!-- FUNCIONALIDADES -->
-<section class="bg-light p-5">
-  <div class="container">
-    <h2 class="text-center mb-4">¿Qué podés hacer?</h2>
-    <div class="row text-center">
-      <div class="col-md-3">
-        <p>🧑‍💼 Registrarte</p>
-      </div>
-      <div class="col-md-3">
-        <p>📦 Publicar productos</p>
-      </div>
-      <div class="col-md-3">
-        <p>🔎 Buscar ofertas</p>
-      </div>
-      <div class="col-md-3">
-        <p>💳 Comprar fácil</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="text-center p-5">
-  <h2>Sumate a la comunidad Nexus</h2>
-  <p>Empezá hoy a comprar o vender en tu zona.</p>
-  <button class="btn btn-success">Crear cuenta</button>
-</section>
+<router-outlet></router-outlet>
 
 <!-- FOOTER -->
 <footer class="bg-dark text-white text-center p-3">
