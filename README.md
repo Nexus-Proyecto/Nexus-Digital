@@ -65,6 +65,21 @@ pip install -r requirements.txt
 6. Ejecutar servidor:
 python manage.py runserver
 
+### Frontend (Angular)
+
+1. Ingresar a carpet Frontend
+cd frontend
+
+2. Instalar dependencias
+npm install
+
+3. Ejecutar aplicación
+ng serve
+
+4. Abrir en navegador
+http://localhost:4200
+
+
 
 ## Uso
 La plataforma permite a los usuarios:
@@ -78,35 +93,33 @@ La plataforma permite a los usuarios:
 
 ## Requerimientos Funcionales
 
-### Registro e inicio de sesión de usuarios
-El sistema permite registrarse ingresando datos personales y credenciales, y luego iniciar sesión.
+| Código | Requisito Funcional |
+|--------|--------------------|
+| RF01 | El sistema debe permitir a los usuarios registrarse ingresando sus datos personales y credenciales, así como iniciar sesión para acceder a su cuenta. |
+| RF02 | El sistema debe permitir a los usuarios crear, editar y eliminar productos, ingresando nombre, descripción, precio y stock. |
+| RF03 | El sistema debe permitir a los usuarios buscar productos por nombre y aplicar filtros por categoría y rango de precios. |
+| RF04 | El sistema debe permitir a los usuarios agregar productos al carrito, modificar cantidades y eliminar productos previamente agregados. |
+| RF05 | El sistema debe permitir a los usuarios confirmar la compra de los productos del carrito, generando una orden de compra. |
+| RF06 | El sistema debe permitir a los usuarios visualizar el historial de compras realizadas. |
+| RF07 | El sistema debe permitir a los usuarios visualizar el detalle de cada producto, incluyendo descripción, precio y disponibilidad. |
+| RF08 | El sistema debe permitir a los usuarios visualizar un resumen del carrito con el total de la compra antes de confirmarla. |
 
-### Gestión de productos
-Permite crear, editar y eliminar productos con nombre, descripción, precio y stock.
+---
 
-### Búsqueda de productos
-Permite buscar productos mediante palabras clave.
+## Requerimientos No Funcionales
 
-### Carrito de compras
-Permite agregar productos y seleccionar cantidades.
-
-### Confirmación de compra
-Genera una orden de compra a partir del carrito.
-
-### Historial de compras
-Permite visualizar compras realizadas.
+| Código | Requisito No Funcional |
+|--------|------------------------|
+| RNF01 | El sistema debe ser responsive, garantizando su correcto funcionamiento en dispositivos móviles, tablets y computadoras. |
+| RNF02 | El sistema debe garantizar la seguridad de los datos personales mediante el uso de cifrado de contraseñas y buenas prácticas de seguridad. |
+| RNF03 | El sistema debe estar estructurado de forma modular y organizada, facilitando su mantenimiento, escalabilidad y futuras actualizaciones. |
+| RNF04 | El sistema debe ofrecer una interfaz intuitiva y fácil de usar, permitiendo a los usuarios navegar y realizar acciones sin dificultad. |
+| RNF05 | El sistema debe responder a las solicitudes del usuario en un tiempo adecuado, garantizando una experiencia fluida. |
 
 
- 
-## Requerimiento no funcionales
 
-### Seguridad
-- Uso de HTTPS  
-- Encriptación de contraseñas con PBKDF2 (Django)
+## Documentación
 
-### Usabilidad
-- Interfaz responsive (Bootstrap)
+[Wiki del Proyecto](https://github.com/Nexus-Proyecto/Nexus-Digital/wiki/Documentaci%C3%B3n-y-Enlaces)
 
-### Mantenibilidad
-- Separación entre frontend (Angular) y backend (Django REST Framework)
 
