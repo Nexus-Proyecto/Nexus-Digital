@@ -57,7 +57,6 @@ class RegistroView(APIView):
             'apellido': usuario.apellido,
             'email': usuario.email,
             'rol': usuario.rol,
-            'token': token.key,
             'mensaje': 'Registro exitoso'
         }, status=status.HTTP_201_CREATED)
     
@@ -102,7 +101,6 @@ class LoginView(APIView):
             'apellido': usuario.apellido,
             'email': usuario.email,
             'rol': usuario.rol,
-            'token': token.key,
             'mensaje': 'Login exitoso'
         }, status=status.HTTP_200_OK)
     
