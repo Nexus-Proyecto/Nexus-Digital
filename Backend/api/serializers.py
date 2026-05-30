@@ -151,3 +151,9 @@ class OrdenCompraSerializer(serializers.ModelSerializer):
 
     def get_usuario_nombre(self, obj):
         return f"{obj.id_usuario.nombre} {obj.id_usuario.apellido}"
+    
+    
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
