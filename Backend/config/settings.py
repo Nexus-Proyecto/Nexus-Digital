@@ -80,15 +80,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'nexus_digital',
-        'USER': 'root',       # XAMPP usa 'root' por defecto
-        'PASSWORD': '',       # XAMPP por defecto NO tiene contraseña
-        'HOST': '127.0.0.1',  # O 'localhost'
-        'PORT': '3306',
-    }
-}
 
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'nexus_db',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': '127.0.0.1',
+        'PORT': '3307',
+        }
+}
 
 
 # Password validation
