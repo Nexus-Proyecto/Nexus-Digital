@@ -1,32 +1,114 @@
 
 from rest_framework import viewsets, status
-from rest_framework.views import APIView  # <--- IMPORTANTE
+from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.hashers import check_password
 
-from .models import Usuario, Producto, Carrito, DetalleCarrito, OrdenCompra, DetalleOrden
-from .serializers import (
-    UsuarioSerializer, UsuarioCreateSerializer,
-    ProductoSerializer,
-    CarritoSerializer, DetalleCarritoSerializer,
-    OrdenCompraSerializer, DetalleOrdenSerializer,
+from .models import (
+    Usuario,
+    Producto,
+    Carrito,
+    DetalleCarrito,
+    OrdenCompra,
+    DetalleOrden,
 )
-# --- TU CLASE PARA PRÁCTICA DE CÓDIGOS DE ESTADO ---
-class ProductoList(APIView):
-    def get(self, request):
-        productos = [
-            {'id': 1, 'nombre': 'Silla de Ruedas', 'precio': 150000},
-            {'id': 2, 'nombre': 'Muletas', 'precio': 25000},
-        ]
-        return Response(productos, status=status.HTTP_200_OK)
+
+from .serializers import (
+    UsuarioSerializer,
+    UsuarioCreateSerializer,
+    LoginSerializer,
+    ProductoSerializer,
+    CarritoSerializer,
+    DetalleCarritoSerializer,
+    OrdenCompraSerializer,
+    DetalleOrdenSerializer,
+)
+
+
+# REGISTRO (US 01)
+
+
+class RegistroView(APIView):
+    """
+    POST /api/auth/register/
+
+    Registra un nuevo usuario.
+    """
+
+    permission_classes = []
 
     def post(self, request):
-        nuevo_producto = request.data
-        return Response(
-            {"message": "Producto creado con éxito", "data": nuevo_producto}, 
-            status=status.HTTP_201_CREATED
-        )
+
+        serializer = UsuarioCreateSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        usuario = serializer.save()
+
+        return Response({
+            'id_usuario': usuario.id_usuario,
+            'nombre': usuario.nombre,
+            'apellido': usuario.apellido,
+            'email': usuario.email,
+            'rol': usuario.rol,
+            'token': token.key,
+            'mensaje': 'Registro exitoso'
+        }, status=status.HTTP_201_CREATED)
+    
+
+# LOGIN (US 02)
+
+class LoginView(APIView):
+
+    permission_classes = []
+
+    def post(self, request):
+
+        serializer = LoginSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        email = serializer.validated_data['email']
+        password = serializer.validated_data['password']
+
+        usuario = Usuario.objects.filter(email=email).first()
+
+        # Usuario no registrado
+        if not usuario:
+            return Response({
+                'error': 'Usuario no registrado'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Contraseña incorrecta
+        if not check_password(password, usuario.password):
+            return Response({
+                'error': 'Credenciales incorrectas'
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
+        
+        return Response({
+            'id_usuario': usuario.id_usuario,
+            'nombre': usuario.nombre,
+            'apellido': usuario.apellido,
+            'email': usuario.email,
+            'rol': usuario.rol,
+            'token': token.key,
+            'mensaje': 'Login exitoso'
+        }, status=status.HTTP_200_OK)
+    
+
+# CRUD COMPLETO
+
 class UsuarioViewSet(viewsets.ModelViewSet):
     """
     CRUD completo para Usuario.
@@ -38,6 +120,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     PATCH  /api/usuarios/{id}/     → actualizar parcial
     DELETE /api/usuarios/{id}/     → eliminar
     """
+
     queryset = Usuario.objects.all()
 
     def get_serializer_class(self):
@@ -59,6 +142,7 @@ class ProductoViewSet(viewsets.ModelViewSet):
     GET    /api/productos/?search=term  → filtrar por nombre
     GET    /api/productos/?vendedor=id  → filtrar por vendedor
     """
+
     queryset = Producto.objects.select_related('id_usuario').all()
     serializer_class = ProductoSerializer
 
@@ -90,6 +174,7 @@ class CarritoViewSet(viewsets.ModelViewSet):
     POST   /api/carritos/{id}/vaciar/                → vaciar carrito
     POST   /api/carritos/{id}/confirmar/             → generar OrdenCompra
     """
+
     queryset = Carrito.objects.select_related('id_usuario').prefetch_related(
         'detalles__id_producto'
     ).all()
@@ -208,6 +293,7 @@ class OrdenCompraViewSet(viewsets.ModelViewSet):
     DELETE /api/ordenes/{id}/  → eliminar
     GET    /api/ordenes/?usuario=id → filtrar por usuario
     """
+
     queryset = OrdenCompra.objects.select_related('id_usuario').prefetch_related(
         'detalles__id_producto'
     ).all()
