@@ -3,6 +3,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { Home } from './components/home/home';
 import { AboutUs } from './components/about-us/about-us';
 import { MainDashboard } from './components/dashboard/main-dashboard/main-dashboard';
+import { Resultados } from './components/resultados/resultados';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -21,5 +22,6 @@ export const routes: Routes = [
     path: 'order-summary', 
     canActivate: [authGuard],
     loadComponent: () => import('./components/order-summary/order-summary.component').then(m => m.OrderSummaryComponent)
-  }
+  },
+  { path: 'resultados', component: Resultados}
 ];
