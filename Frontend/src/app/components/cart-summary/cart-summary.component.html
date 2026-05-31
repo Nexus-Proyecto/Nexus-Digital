@@ -1,0 +1,5 @@
+<div class="cart-summary-mini" routerLink="/cart">
+  <span class="cart-icon">🛒</span>
+  <span class="badge" *ngIf="totalItems > 0">{{ totalItems }}</span>
+  <span class="total" *ngIf="totalItems > 0">${{ totalPrice | number:'1.2-2' }}</span>
+</div>
