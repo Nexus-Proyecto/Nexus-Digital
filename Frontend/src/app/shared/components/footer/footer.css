@@ -1,0 +1,11 @@
+.footer {
+  background-color: var(--color-dark-purple);
+  color: var(--color-secondary);
+  padding: 1.5rem 0;
+}
+.footer a {
+  color: var(--color-accent) !important;
+}
+.footer a:hover {
+  color: var(--color-primary) !important;
+}

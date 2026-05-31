@@ -1,0 +1,116 @@
+:root {
+  /* Paleta de Colores */
+  --color-primary:     #75B1FC;
+  --color-secondary:   #AE91F1;
+  --color-dark-blue:   #0C4A8D;
+  --color-dark-purple: #5E2491;
+  --color-accent:      #F5DE6B;
+
+  /* Variables de Bootstrap */
+  --bs-primary:        #75B1FC;
+  --bs-secondary:      #AE91F1;
+  --bs-dark:           #0C4A8D;
+}
+
+body{
+    background-color: #AE91F1 ;
+}
+/* Navbar */
+
+nav.navbar {
+  background-color: var(--color-dark-purple);
+  border-bottom: 3px solid var(--color-accent);
+}
+nav.navbar .navbar-brand {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+nav.navbar .nav-link {
+  color: var(--color-primary);
+}
+nav.navbar .nav-link:hover,
+nav.navbar .nav-link.active {
+  color: var(--color-accent);
+}
+
+nav.navbar .navbar-toggler {
+  border-color: var(--color-primary);
+}
+
+/* Botones */
+
+a.btn.btn-primary,
+button.btn.btn-primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-dark-blue);
+  color: var(--color-dark-blue);
+}
+a.btn.btn-primary:hover,
+button.btn.btn-primary:hover {
+  background-color: var(--color-dark-blue);
+  color: var(--color-primary);
+}
+a.btn.btn-secondary,
+button.btn.btn-secondary {
+  background-color: var(--color-secondary);
+  border-color: var(--color-dark-purple);
+  color: var(--color-dark-purple);
+}
+a.btn.btn-secondary:hover,
+button.btn.btn-secondary:hover {
+  background-color: var(--color-dark-purple);
+  color: var(--color-secondary);
+}
+
+/* Cards */
+
+div.card {
+  border: 1.5px solid var(--color-primary);
+  border-radius: 10px;
+}
+div.card .card-header {
+  background-color: var(--color-dark-blue);
+  color: var(--color-accent);
+  font-weight: 600;
+}
+div.card .card-title {
+  color: var(--color-dark-blue);
+}
+
+/* Badges */
+
+span.badge.bg-primary {
+  background-color: var(--color-primary);
+  color: var(--color-dark-blue);
+}
+span.badge.bg-secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-dark-purple);
+}
+
+/* Forms */
+
+input.form-control:focus,
+textarea.form-control:focus,
+select.form-control:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.2rem rgba(117, 177, 252, 0.3);
+}
+label.form-label {
+  color: var(--color-dark-blue);
+  font-weight: 500;
+}
+
+/* Footer */
+
+footer.footer-custom {
+  background-color: var(--color-dark-purple);
+  color: var(--color-secondary);
+  padding: 1.5rem 0;
+}
+footer.footer-custom a {
+  color: var(--color-accent);
+}
+footer.footer-custom a:hover {
+  color: var(--color-primary);
+}
