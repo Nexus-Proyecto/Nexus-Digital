@@ -9,7 +9,7 @@ export interface DetalleOrden {
 
 export interface Orden {
   id_orden: number;
-  fecha: Date;
+  fecha: string | Date;
   total: number;
   id_usuario: number;
   detalles: DetalleOrden[];

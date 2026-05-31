@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
 import { CartItem } from '../../shared/interfaces/cart-item.interface';
+import { Orden } from '../../shared/interfaces/orden.interface'
 
 export interface OrderData {
   items: CartItem[];
@@ -33,8 +34,8 @@ export class OrderService {
     );
   }
 
-  getOrderHistory(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/orders/`).pipe(
+  getOrderHistory(): Observable<Orden[]> {
+    return this.http.get<Orden[]>(`${this.apiUrl}/orders/`).pipe(
       catchError(error => {
         console.error('Error al obtener historial:', error);
         return throwError(() => new Error('No se pudo cargar el historial'));
