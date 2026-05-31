@@ -4,6 +4,7 @@ import { Home } from './components/home/home';
 import { AboutUs } from './components/about-us/about-us';
 import { MainDashboard } from './components/dashboard/main-dashboard/main-dashboard';
 import { Resultados } from './components/resultados/resultados';
+import { Productos } from './components/productos/productos';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -23,5 +24,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./components/order-summary/order-summary.component').then(m => m.OrderSummaryComponent)
   },
-  { path: 'resultados', component: Resultados}
+  { path: 'resultados', component: Resultados},
+  { path: 'productos', component: Productos}
 ];
