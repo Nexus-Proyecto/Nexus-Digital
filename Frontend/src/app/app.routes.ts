@@ -6,6 +6,7 @@ import { MainDashboard } from './components/dashboard/main-dashboard/main-dashbo
 import { Resultados } from './components/resultados/resultados';
 import { Productos } from './components/productos/productos';
 import { ProductoDetalle } from './components/producto-detalle/producto-detalle';
+import { Historial } from './components/historial/historial'; 
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -27,5 +28,6 @@ export const routes: Routes = [
   },
   { path: 'resultados', component: Resultados},
   { path: 'productos', component: Productos},
-  { path: 'producto/:id', component: ProductoDetalle}
+  { path: 'producto/:id', component: ProductoDetalle},
+  { path: 'historial', component: Historial}
 ];
