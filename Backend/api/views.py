@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import check_password
+from rest_framework import filters
 
 from .models import (
     Usuario,
@@ -148,11 +149,34 @@ class ProductoViewSet(viewsets.ModelViewSet):
         qs = super().get_queryset()
         search   = self.request.query_params.get('search')
         vendedor = self.request.query_params.get('vendedor')
+        
+        # la descripción (que funciona como filtro de categoría/palabra clave)
         if search:
-            qs = qs.filter(nombre__icontains=search)
+            # Filtra si el término está en el nombre O en la descripción
+            qs = qs.filter(
+                models.Q(nombre__icontains=search) | 
+                models.Q(descripcion__icontains=search)
+            )
         if vendedor:
             qs = qs.filter(id_usuario=vendedor)
         return qs
+
+    #  método para ver el detalle y evaluar la disponibilidad o si el producto está agotado
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        
+        data = serializer.data
+        
+        # Evaluamos el stock para definir la disponibilidad
+        if instance.stock > 0:
+            data['disponibilidad'] = "Disponible"
+            data['estado_stock'] = f"Hay {instance.stock} unidades en inventario."
+        else:
+            data['disponibilidad'] = "Agotado"
+            data['estado_stock'] = "El producto no se encuentra disponible momentáneamente."
+            
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class CarritoViewSet(viewsets.ModelViewSet):
@@ -303,6 +327,31 @@ class OrdenCompraViewSet(viewsets.ModelViewSet):
         if usuario:
             qs = qs.filter(id_usuario=usuario)
         return qs
+
+    #  Ver el detalle completo de una compra específica con sus productos
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        
+        
+        detalles = instance.detalles.all()
+        detalles_data = []
+        for d in detalles:
+            detalles_data.append({
+                "id_detalle": d.id_detalle,
+                "id_producto": d.id_producto_id,
+                "nombre_producto": d.id_producto.nombre if d.id_producto else "Producto Eliminado o no disponible",
+                "cantidad": d.cantidad,
+                "precio_unitario": str(d.precio_unitario),
+                "subtotal": str(d.subtotal)
+            })
+            
+        
+        respuesta = {
+            "orden": serializer.data,
+            "items_comprados": detalles_data
+        }
+        return Response(respuesta, status=status.HTTP_200_OK)
 
 
 class DetalleOrdenViewSet(viewsets.ModelViewSet):
