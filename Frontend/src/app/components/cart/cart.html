@@ -1,0 +1,26 @@
+<h2>Mi Carrito</h2>
+
+<div *ngIf="cart.length === 0">
+  <p>El carrito está vacío</p>
+</div>
+
+<div *ngFor="let item of cart">
+  <h4>{{ item.name }}</h4>
+  <p>Cantidad: {{ item.quantity }}</p>
+  <p>Precio: ${{ item.price }}</p>
+
+  <button (click)="remove(item.id)">
+    Eliminar
+  </button>
+</div>
+
+<hr>
+
+<h3>Resumen</h3>
+
+<p>Total productos: {{ getTotalItems() }}</p>
+<p>Total a pagar: ${{ getTotal() }}</p>
+
+<button (click)="confirmPurchase()">
+  Confirmar compra
+</button>
