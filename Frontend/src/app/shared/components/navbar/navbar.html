@@ -29,12 +29,23 @@
         <li class="nav-item">
           
           <a class="nav-link"
+            routerLink="/productos"
+            routerLinkActive="active">
+            Productos
+          </a>
+        </li>
+
+        <li class="nav-item">
+          
+          <a class="nav-link"
             routerLink="/quienes-somos"
             routerLinkActive="active">
             Quiénes Somos
           </a>
         </li>
+
       </ul>
+
 
       <form class="d-flex ms-3" (ngSubmit)="onSearch()">
         <input
