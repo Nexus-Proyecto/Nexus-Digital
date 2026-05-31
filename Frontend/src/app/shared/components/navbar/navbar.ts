@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,9 +11,11 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './navbar.css',
 })
 export class Navbar {
-  searchQuery: string = '';
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
-  constructor(private router: Router) {}
+  searchQuery: string = '';
+  readonly currentUser = this.authService.currentUser;
 
   onSearch() {
     if (this.searchQuery.trim()) {
@@ -21,5 +24,10 @@ export class Navbar {
       });
       this.searchQuery = '';
     }
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 }

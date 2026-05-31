@@ -1,22 +1,34 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-dashboard-user',
-
   imports: [],
-
   templateUrl: './dashboard-user.html',
   styleUrl: './dashboard-user.css',
 })
+export class DashboardUser implements OnInit {
+  private readonly authService = inject(AuthService);
 
-export class DashboardUser {
+  opcionesUsuario: string[] = [];
 
-  opcionesUsuario = [
+  ngOnInit(): void {
+    const user = this.authService.currentUser();
+    const rol = user ? user.rol : 'comprador';
 
-    'Mi perfil',
-    'Mis compras',
-    'Favoritos'
-
-  ];
-
+    if (rol === 'vendedor') {
+      this.opcionesUsuario = [
+        'Mi perfil',
+        'Mis ventas',
+        'Mis productos (Crear/Eliminar)',
+        'Favoritos'
+      ];
+    } else {
+      this.opcionesUsuario = [
+        'Mi perfil',
+        'Mis compras',
+        'Favoritos'
+      ];
+    }
+  }
 }

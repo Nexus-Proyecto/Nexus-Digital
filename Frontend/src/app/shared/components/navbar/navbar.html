@@ -35,13 +35,40 @@
           </a>
         </li>
 
-        <li class="nav-item">
-          <a class="nav-link"
-            routerLink="/registro"
-            routerLinkActive="active">
-            Registro
-          </a>
-        </li>
+        @if (currentUser()) {
+          <li class="nav-item">
+            <a class="nav-link"
+              routerLink="/dashboard"
+              routerLinkActive="active">
+              Panel de Control
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center ms-lg-2">
+            <span class="navbar-text text-light me-3 mb-1 mb-lg-0">
+              Hola, <strong>{{ currentUser().nombre }}</strong>
+            </span>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <button class="btn btn-outline-light btn-sm" (click)="logout()">
+              Cerrar Sesión
+            </button>
+          </li>
+        } @else {
+          <li class="nav-item">
+            <a class="nav-link"
+              routerLink="/login"
+              routerLinkActive="active">
+              Iniciar Sesión
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link"
+              routerLink="/registro"
+              routerLinkActive="active">
+              Registro
+            </a>
+          </li>
+        }
       </ul>
 
       <form class="d-flex ms-3" (ngSubmit)="onSearch()">
