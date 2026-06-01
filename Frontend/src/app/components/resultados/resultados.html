@@ -1,7 +1,66 @@
 <main class="container my-5">
-    <h2>Resultados para: <span>{{ searchQuery }}</span></h2>
-    <p class="text-muted">Mostrando resultados de búsqueda para "{{ searchQuery }}"</p>
- 
-<!-- se muestran resultados filtrados -->
+
+  <h2>
+    Resultados para:
+    <span>{{ searchQuery }}</span>
+  </h2>
+
+  <p class="text-muted">
+    Mostrando resultados de búsqueda para "{{ searchQuery }}"
+  </p>
+
+  <div class="row mt-4">
+
+    <div
+      class="col-md-4 mb-4"
+      *ngFor="let producto of resultados">
+
+      <div class="card h-100">
+
+        <div class="card-body">
+
+          <h5 class="card-title">
+            {{ producto.nombre }}
+          </h5>
+
+          <p class="card-text">
+            {{ producto.descripcion }}
+          </p>
+
+          <p class="card-text">
+            <strong>$ {{ producto.precio }}</strong>
+          </p>
+
+          <p class="card-text">
+
+            <span *ngIf="producto.stock > 0">
+              Stock disponible: {{ producto.stock }}
+            </span>
+
+            <span
+              *ngIf="producto.stock === 0"
+              class="text-danger">
+              Agotado
+            </span>
+
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div
+    *ngIf="resultados.length === 0"
+    class="text-center mt-5">
+
+    <p>
+      No se encontraron productos para "{{ searchQuery }}"
+    </p>
+
+  </div>
 
 </main>

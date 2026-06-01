@@ -1,0 +1,127 @@
+<div class="checkout-container">
+  <h2 class="checkout-title">📦 Finalizar Compra</h2>
+
+  <div *ngIf="orderSuccess" class="alert alert-success">
+    <div class="success-icon">🎉</div>
+    <h3>¡Compra realizada con éxito!</h3>
+    <p>Redirigiendo al resumen de tu orden...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!orderSuccess" class="checkout-grid">
+    <div class="form-section">
+      <h3 class="section-title">Datos de envío</h3>
+      <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()" novalidate>
+        
+        <div class="form-group">
+          <label>Nombre completo *</label>
+          <input 
+            type="text" 
+            formControlName="fullName" 
+            placeholder="Juan Pérez"
+            [class.is-invalid]="submitted && f['fullName'].invalid"
+            [class.is-valid]="f['fullName'].valid && f['fullName'].touched">
+          <div *ngIf="submitted && f['fullName'].invalid" class="invalid-feedback">
+            {{ getErrorMessage('fullName') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Email *</label>
+          <input 
+            type="email" 
+            formControlName="email" 
+            placeholder="juan@email.com"
+            [class.is-invalid]="submitted && f['email'].invalid"
+            [class.is-valid]="f['email'].valid && f['email'].touched">
+          <div *ngIf="submitted && f['email'].invalid" class="invalid-feedback">
+            {{ getErrorMessage('email') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Dirección *</label>
+          <input 
+            type="text" 
+            formControlName="address" 
+            placeholder="Av. Siempre Viva 123"
+            [class.is-invalid]="submitted && f['address'].invalid"
+            [class.is-valid]="f['address'].valid && f['address'].touched">
+          <div *ngIf="submitted && f['address'].invalid" class="invalid-feedback">
+            {{ getErrorMessage('address') }}
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ciudad *</label>
+            <input 
+              type="text" 
+              formControlName="city" 
+              placeholder="Buenos Aires"
+              [class.is-invalid]="submitted && f['city'].invalid"
+              [class.is-valid]="f['city'].valid && f['city'].touched">
+            <div *ngIf="submitted && f['city'].invalid" class="invalid-feedback">
+              {{ getErrorMessage('city') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Código Postal *</label>
+            <input 
+              type="text" 
+              formControlName="zipCode" 
+              placeholder="1000"
+              [class.is-invalid]="submitted && f['zipCode'].invalid"
+              [class.is-valid]="f['zipCode'].valid && f['zipCode'].touched">
+            <div *ngIf="submitted && f['zipCode'].invalid" class="invalid-feedback">
+              {{ getErrorMessage('zipCode') }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Teléfono *</label>
+          <input 
+            type="tel" 
+            formControlName="phone" 
+            placeholder="1123456789"
+            [class.is-invalid]="submitted && f['phone'].invalid"
+            [class.is-valid]="f['phone'].valid && f['phone'].touched">
+          <div *ngIf="submitted && f['phone'].invalid" class="invalid-feedback">
+            {{ getErrorMessage('phone') }}
+          </div>
+          <small class="form-text">Mínimo 10 dígitos, sin 0 ni 15</small>
+        </div>
+
+        <button type="submit" class="submit-btn" [disabled]="loading">
+          <span *ngIf="!loading">Confirmar compra</span>
+          <span *ngIf="loading">Procesando...</span>
+        </button>
+      </form>
+    </div>
+
+    <div class="order-review">
+      <h3 class="section-title">Resumen del pedido</h3>
+      <div class="review-items">
+        <div *ngFor="let item of cartItems" class="review-item">
+          <div class="item-info">
+            <img [src]="item.image || 'assets/placeholder.png'" [alt]="item.name">
+            <div>
+              <p class="item-name">{{ item.name }}</p>
+              <p class="item-qty">Cantidad: {{ item.quantity }}</p>
+            </div>
+          </div>
+          <span class="item-price">${{ item.price * item.quantity | number:'1.2-2' }}</span>
+        </div>
+      </div>
+      <div class="review-total">
+        <span>Total a pagar:</span>
+        <span>${{ total | number:'1.2-2' }}</span>
+      </div>
+    </div>
+  </div>
+</div>
