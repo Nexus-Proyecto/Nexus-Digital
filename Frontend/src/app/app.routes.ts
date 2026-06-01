@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
 import { Home } from './components/home/home';
 import { AboutUs } from './components/about-us/about-us';
 import { MainDashboard } from './components/dashboard/main-dashboard/main-dashboard';

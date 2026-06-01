@@ -1,0 +1,33 @@
+<main class="container my-5">
+
+  <button class="btn btn-secondary mb-4" (click)="volver()">
+    ← Volver a productos
+  </button>
+
+  <div *ngIf="producto">
+    <div class="card">
+      <div class="card-header">
+        <h2>{{ producto.nombre }}</h2>
+      </div>
+      <div class="card-body">
+        <p class="card-text">{{ producto.descripcion }}</p>
+        <p class="card-text">
+          <strong>Precio: $ {{ producto.precio }}</strong>
+        </p>
+        <p class="card-text">
+          <span *ngIf="producto.stock > 0">
+            Stock disponible: {{ producto.stock }}
+          </span>
+          <span *ngIf="producto.stock === 0" class="text-danger">
+            ⚠️ Producto agotado
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!producto" class="text-center mt-5">
+    <p>Cargando producto...</p>
+  </div>
+
+</main>

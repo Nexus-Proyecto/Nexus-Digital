@@ -1,0 +1,52 @@
+<div class="cart-container">
+  <h2 class="cart-title">Mi Carrito</h2>
+
+  <div *ngIf="cart.length === 0" class="empty-cart">
+    <p class="empty-text">Tu carrito está vacío</p>
+    <a routerLink="/products" class="btn-primary">Ir a comprar</a>
+  </div>
+
+  <div *ngIf="cart.length > 0" class="cart-content">
+    <div class="cart-items">
+      <div *ngFor="let item of cart" class="cart-item">
+        <div class="item-image">
+          <img [src]="item.image || 'assets/placeholder.png'" [alt]="item.name">
+        </div>
+        <div class="item-details">
+          <h4 class="item-name">{{ item.name }}</h4>
+          <p class="item-price">${{ item.price | number:'1.2-2' }}</p>
+        </div>
+        <div class="quantity-controls">
+          <button 
+            class="btn-quantity" 
+            (click)="updateQuantity(item.id, item.quantity - 1)" 
+            [disabled]="item.quantity <= 1">−</button>
+          <span class="quantity-value">{{ item.quantity }}</span>
+          <button 
+            class="btn-quantity" 
+            (click)="updateQuantity(item.id, item.quantity + 1)">+</button>
+        </div>
+        <p class="item-subtotal">${{ item.price * item.quantity | number:'1.2-2' }}</p>
+        <button class="btn-remove" (click)="remove(item.id)" title="Eliminar">🗑️</button>
+      </div>
+    </div>
+
+    <div class="cart-summary">
+      <h3 class="summary-title">Resumen</h3>
+      <div class="summary-row">
+        <span>Total productos:</span>
+        <span>{{ getTotalItems() }}</span>
+      </div>
+      <div class="summary-row summary-total">
+        <span>Total a pagar:</span>
+        <span>${{ getTotal() | number:'1.2-2' }}</span>
+      </div>
+      <div class="cart-actions">
+        <button class="btn-secondary" (click)="clearCart()">Vaciar carrito</button>
+        <a routerLink="/checkout" class="btn-primary">Finalizar compra →</a>
+      </div>
+    </div>
+  </div>
+
+  <p *ngIf="message" class="message">{{ message }}</p>
+</div>
