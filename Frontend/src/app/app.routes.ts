@@ -34,5 +34,8 @@ export const routes: Routes = [
   { path: 'resultados', component: Resultados },
   { path: 'productos', component: Productos },
   { path: 'producto/:id', component: ProductoDetalle },
-  { path: 'historial', component: Historial }
+  { path: 'historial', component: Historial },
+  { path: 'resultados', component: Resultados },
+  { path: 'registro', component: Registro },
+  { path: 'login', component: Login }
 ];
