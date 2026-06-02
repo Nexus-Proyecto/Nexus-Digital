@@ -6,7 +6,7 @@ import { MainDashboard } from './components/dashboard/main-dashboard/main-dashbo
 import { Resultados } from './components/resultados/resultados';
 import { Productos } from './components/productos/productos';
 import { ProductoDetalle } from './components/producto-detalle/producto-detalle';
-import { Historial } from './components/historial/historial'; 
+import { Historial } from './components/historial/historial';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -15,6 +15,10 @@ export const routes: Routes = [
   { 
     path: 'cart', 
     loadComponent: () => import('./components/cart/cart').then(m => m.Cart)
+  },
+  { 
+    path: 'login', 
+    loadComponent: () => import('./components/login/login').then(m => m.LoginComponent)
   },
   { 
     path: 'checkout', 

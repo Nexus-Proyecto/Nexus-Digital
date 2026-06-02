@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';  // ← Agregué Router
 import { CartService } from '../../core/services/cart.service';
 import { CartItem } from '../../shared/interfaces/cart-item.interface';
 
@@ -15,7 +15,8 @@ export class Cart implements OnInit {
   cart: CartItem[] = [];
   message: string = '';
 
-  constructor(private cartService: CartService) {}
+  // ← Agregué private router: Router acá
+  constructor(private cartService: CartService, private router: Router) {}
 
   ngOnInit(): void {
     this.cartService.cart$.subscribe(items => {
@@ -55,5 +56,15 @@ export class Cart implements OnInit {
       return;
     }
     this.message = '';
+  }
+
+  // ← Método nuevo para debuggear
+  goToCheckout(): void {
+    console.log('🔴 goToCheckout llamado');
+    this.router.navigate(['/checkout']).then(success => {
+      console.log('🟢 Navegación:', success ? 'EXITOSA' : 'FALLIDA');
+    }).catch(err => {
+      console.error('🔴 Error de navegación:', err);
+    });
   }
 }

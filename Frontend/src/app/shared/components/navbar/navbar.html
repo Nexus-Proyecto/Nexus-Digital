@@ -1,6 +1,5 @@
-<nav class="navbar navbar-expand-lg">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
-
     <a class="navbar-brand" routerLink="/">
       Nexus Digital
     </a>
@@ -14,51 +13,30 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
-
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          
-            <a class="nav-link"
+          <a
+            class="nav-link"
             routerLink="/"
             routerLinkActive="active"
             [routerLinkActiveOptions]="{ exact: true }">
             Inicio
           </a>
         </li>
-
         <li class="nav-item">
-          
-          <a class="nav-link"
-            routerLink="/productos"
-            routerLinkActive="active">
-            Productos
-          </a>
-        </li>
-
-        <li class="nav-item">
-          
-          <a class="nav-link"
+          <a
+            class="nav-link"
             routerLink="/quienes-somos"
             routerLinkActive="active">
             Quiénes Somos
           </a>
         </li>
-
       </ul>
-
-
-      <form class="d-flex ms-3" (ngSubmit)="onSearch()">
-        <input
-          class="form-control"
-          type="search"
-          placeholder="Buscar..."
-          [(ngModel)]="searchQuery"
-          name="search"/>
-        <button class="btn btn-primary ms-2" type="submit">
-          Buscar
-        </button>
-      </form>
-
+      
+      <!-- Cart Summary Widget -->
+      <div class="cart-summary-wrapper ms-3">
+        <app-cart-summary></app-cart-summary>
+      </div>
     </div>
   </div>
-</nav> 
+</nav>

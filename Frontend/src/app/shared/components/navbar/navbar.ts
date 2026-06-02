@@ -1,25 +1,12 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { CartSummaryComponent } from '../../../components/cart-summary/cart-summary.component';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, FormsModule],
+  imports: [RouterLink, RouterLinkActive, CartSummaryComponent],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
-export class Navbar {
-  searchQuery: string = '';
-
-  constructor(private router: Router) {}
-
-  onSearch() {
-    if (this.searchQuery.trim()) {
-      this.router.navigate(['/resultados'], {
-        queryParams: { q: this.searchQuery }
-      });
-      this.searchQuery = '';
-    }
-  }
-}
+export class Navbar {}
