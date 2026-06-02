@@ -4,7 +4,7 @@
 
   @for (opcion of opcionesUsuario; track opcion) {
 
-    <div class="card">
+    <div class="card" (click)="seleccionarOpcion(opcion)">
 
       <h3>{{ opcion }}</h3>
 
