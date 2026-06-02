@@ -4,6 +4,8 @@ import { Home } from './components/home/home';
 import { AboutUs } from './components/about-us/about-us';
 import { MainDashboard } from './components/dashboard/main-dashboard/main-dashboard';
 import { Resultados } from './components/resultados/resultados';
+import { Registro } from './components/registro/registro';
+import { Login } from './components/login/login';
 import { Productos } from './components/productos/productos';
 import { ProductoDetalle } from './components/producto-detalle/producto-detalle';
 import { Historial } from './components/historial/historial';
@@ -12,26 +14,24 @@ export const routes: Routes = [
   { path: '', component: Home },
   { path: 'quienes-somos', component: AboutUs },
   { path: 'dashboard', component: MainDashboard },
-  { 
-    path: 'cart', 
+  { path: 'resultados', component: Resultados },
+  { path: 'registro', component: Registro },
+  { path: 'login', component: Login },
+  {
+    path: 'cart',
     loadComponent: () => import('./components/cart/cart').then(m => m.Cart)
   },
-  { 
-    path: 'login', 
-    loadComponent: () => import('./components/login/login').then(m => m.LoginComponent)
-  },
-  { 
-    path: 'checkout', 
+  {
+    path: 'checkout',
     canActivate: [authGuard],
     loadComponent: () => import('./components/checkout/checkout.component').then(m => m.CheckoutComponent)
   },
-  { 
-    path: 'order-summary', 
+  {
+    path: 'order-summary',
     canActivate: [authGuard],
     loadComponent: () => import('./components/order-summary/order-summary.component').then(m => m.OrderSummaryComponent)
   },
-  { path: 'resultados', component: Resultados},
-  { path: 'productos', component: Productos},
-  { path: 'producto/:id', component: ProductoDetalle},
-  { path: 'historial', component: Historial}
+  { path: 'productos', component: Productos },
+  { path: 'producto/:id', component: ProductoDetalle },
+  { path: 'historial', component: Historial }
 ];
