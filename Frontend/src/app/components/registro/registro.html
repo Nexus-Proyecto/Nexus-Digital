@@ -1,0 +1,199 @@
+<div class="register-container container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-9 col-lg-7">
+      
+      <!-- Card Principal -->
+      <div class="card shadow-lg border-0 register-card">
+        
+        <div class="card-header text-center py-4 border-0">
+          <h2 class="register-title mb-1">Crea tu Cuenta</h2>
+          <p class="register-subtitle mb-0">Únete a Nexus Digital y conéctate con el comercio local en Córdoba</p>
+        </div>
+
+        <div class="card-body px-4 px-md-5 py-4">
+          
+          <!-- Alerta de Éxito -->
+          <div *ngIf="successMessage" class="alert alert-success d-flex align-items-center mb-4 fade show" role="alert">
+            <span class="material-icons me-2">check_circle</span>
+            <div>{{ successMessage }}</div>
+          </div>
+
+          <!-- Alerta de Error -->
+          <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center mb-4 fade show" role="alert">
+            <span class="material-icons me-2">error</span>
+            <div style="white-space: pre-line;">{{ errorMessage }}</div>
+          </div>
+
+          <form (ngSubmit)="onSubmit()" novalidate>
+            
+            <!-- Nombre y Apellido -->
+            <div class="row mb-3">
+              <div class="col-md-6 mb-3 mb-md-0">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input
+                  type="text"
+                  id="nombre"
+                  name="nombre"
+                  [(ngModel)]="nombre"
+                  class="form-control"
+                  [class.is-invalid]="validationErrors['nombre']"
+                  placeholder="Tu nombre"
+                  [disabled]="isLoading"
+                />
+                <div class="invalid-feedback" *ngIf="validationErrors['nombre']">
+                  {{ validationErrors['nombre'] }}
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <label for="apellido" class="form-label">Apellido</label>
+                <input
+                  type="text"
+                  id="apellido"
+                  name="apellido"
+                  [(ngModel)]="apellido"
+                  class="form-control"
+                  [class.is-invalid]="validationErrors['apellido']"
+                  placeholder="Tu apellido"
+                  [disabled]="isLoading"
+                />
+                <div class="invalid-feedback" *ngIf="validationErrors['apellido']">
+                  {{ validationErrors['apellido'] }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Correo Electrónico -->
+            <div class="mb-3">
+              <label for="email" class="form-label">Correo Electrónico</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0">
+                  <span class="material-icons text-muted">email</span>
+                </span>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  [(ngModel)]="email"
+                  class="form-control border-start-0"
+                  [class.is-invalid]="validationErrors['email']"
+                  placeholder="ejemplo@correo.com"
+                  [disabled]="isLoading"
+                />
+                <div class="invalid-feedback" *ngIf="validationErrors['email']">
+                  {{ validationErrors['email'] }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Selección de Rol Interactiva -->
+            <div class="mb-4">
+              <label class="form-label d-block mb-3">¿Qué deseas hacer en Nexus Digital?</label>
+              <div class="row g-3">
+                
+                <!-- Tarjeta Rol Comprador -->
+                <div class="col-6">
+                  <div
+                    class="role-selection-card text-center py-3 px-2 px-sm-3 h-100"
+                    [class.active]="rol === 'comprador'"
+                    (click)="!isLoading && rol = 'comprador'"
+                    role="button"
+                    tabindex="0"
+                  >
+                    <div class="role-icon mb-2">🛍️</div>
+                    <div class="role-name font-weight-bold">Comprar</div>
+                    <p class="role-description mb-0 text-muted d-none d-sm-block">Quiero buscar y adquirir productos locales</p>
+                  </div>
+                </div>
+
+                <!-- Tarjeta Rol Vendedor -->
+                <div class="col-6">
+                  <div
+                    class="role-selection-card text-center py-3 px-2 px-sm-3 h-100"
+                    [class.active]="rol === 'vendedor'"
+                    (click)="!isLoading && rol = 'vendedor'"
+                    role="button"
+                    tabindex="0"
+                  >
+                    <div class="role-icon mb-2">🏪</div>
+                    <div class="role-name font-weight-bold">Vender</div>
+                    <p class="role-description mb-0 text-muted d-none d-sm-block">Quiero publicar y vender mis productos</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Contraseña -->
+            <div class="mb-3">
+              <label for="password" class="form-label">Contraseña</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0">
+                  <span class="material-icons text-muted">lock</span>
+                </span>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  [(ngModel)]="password"
+                  class="form-control border-start-0"
+                  [class.is-invalid]="validationErrors['password']"
+                  placeholder="Mínimo 8 caracteres"
+                  [disabled]="isLoading"
+                />
+                <div class="invalid-feedback" *ngIf="validationErrors['password']">
+                  {{ validationErrors['password'] }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Confirmar Contraseña -->
+            <div class="mb-4">
+              <label for="passwordConfirm" class="form-label">Confirmar Contraseña</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0">
+                  <span class="material-icons text-muted">lock_outline</span>
+                </span>
+                <input
+                  type="password"
+                  id="passwordConfirm"
+                  name="passwordConfirm"
+                  [(ngModel)]="passwordConfirm"
+                  class="form-control border-start-0"
+                  [class.is-invalid]="validationErrors['passwordConfirm']"
+                  placeholder="Repite tu contraseña"
+                  [disabled]="isLoading"
+                />
+                <div class="invalid-feedback" *ngIf="validationErrors['passwordConfirm']">
+                  {{ validationErrors['passwordConfirm'] }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Botón Registrarse -->
+            <button
+              type="submit"
+              class="btn btn-primary w-100 py-2.5 register-btn d-flex align-items-center justify-content-center"
+              [disabled]="isLoading"
+            >
+              <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              <span class="material-icons me-2" *ngIf="!isLoading">person_add</span>
+              {{ isLoading ? 'Creando cuenta...' : 'Crear Cuenta' }}
+            </button>
+
+          </form>
+          
+          <!-- Pie de Formulario -->
+          <div class="text-center mt-4">
+            <p class="mb-0 text-muted">
+              ¿Ya tienes una cuenta? 
+              <a routerLink="/login" class="login-link fw-bold ms-1">Iniciar Sesión</a>
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
