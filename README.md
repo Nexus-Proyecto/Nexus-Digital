@@ -4,12 +4,12 @@
 ## Módulo Programador Web | Tecnicatura Superior en Desarrollo Web y Aplicaciones Digitales
 
 ## Integrantes
-- María Agustina Alonzo  
-- Augusto Andrés Raffaeli  
-- Yohana Eugenia Grosso  
-- Griselda Leonor Aguirre  
-- Scarlata María Soledad 
-- Juan Ignacio Alonso 
+- Juan Ignacio Alonso (Scrum Master)
+- Griselda Leonor Aguirre (Developer) 
+- Augusto Andrés Raffaeli (Developer) 
+- Yohana Eugenia Grosso (Developer)
+- María Soledad Scarlata (Developer)
+
 
 
 
@@ -97,7 +97,7 @@ La plataforma permite a los usuarios:
 |--------|--------------------|
 | RF01 | El sistema debe permitir a los usuarios registrarse ingresando sus datos personales y credenciales, así como iniciar sesión para acceder a su cuenta. |
 | RF02 | El sistema debe permitir a los usuarios crear, editar y eliminar productos, ingresando nombre, descripción, precio y stock. |
-| RF03 | El sistema debe permitir a los usuarios buscar productos por nombre y aplicar filtros por categoría y rango de precios. |
+| RF03 | El sistema debe permitir a los usuarios buscar productos por nombre y aplicar filtros por palabra clave. |
 | RF04 | El sistema debe permitir a los usuarios agregar productos al carrito, modificar cantidades y eliminar productos previamente agregados. |
 | RF05 | El sistema debe permitir a los usuarios confirmar la compra de los productos del carrito, generando una orden de compra. |
 | RF06 | El sistema debe permitir a los usuarios visualizar el historial de compras realizadas. |
@@ -122,4 +122,7 @@ La plataforma permite a los usuarios:
 
 [Wiki del Proyecto](https://github.com/Nexus-Proyecto/Nexus-Digital/wiki/Documentaci%C3%B3n-y-Enlaces)
 
+---
 
+> Documento elaborado bajo metodología ágil (Scrum).  
+> Proyecto académico — Instituto Superior Politécnico Córdoba (ISPC) — Cohorte 2025.
