@@ -1,32 +1,113 @@
 
 from rest_framework import viewsets, status
-from rest_framework.views import APIView  # <--- IMPORTANTE
+from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.hashers import check_password
+from rest_framework import filters
 
-from .models import Usuario, Producto, Carrito, DetalleCarrito, OrdenCompra, DetalleOrden
-from .serializers import (
-    UsuarioSerializer, UsuarioCreateSerializer,
-    ProductoSerializer,
-    CarritoSerializer, DetalleCarritoSerializer,
-    OrdenCompraSerializer, DetalleOrdenSerializer,
+from .models import (
+    Usuario,
+    Producto,
+    Carrito,
+    DetalleCarrito,
+    OrdenCompra,
+    DetalleOrden,
 )
-# --- TU CLASE PARA PRÁCTICA DE CÓDIGOS DE ESTADO ---
-class ProductoList(APIView):
-    def get(self, request):
-        productos = [
-            {'id': 1, 'nombre': 'Silla de Ruedas', 'precio': 150000},
-            {'id': 2, 'nombre': 'Muletas', 'precio': 25000},
-        ]
-        return Response(productos, status=status.HTTP_200_OK)
+
+from .serializers import (
+    UsuarioSerializer,
+    UsuarioCreateSerializer,
+    LoginSerializer,
+    ProductoSerializer,
+    CarritoSerializer,
+    DetalleCarritoSerializer,
+    OrdenCompraSerializer,
+    DetalleOrdenSerializer,
+)
+
+
+# REGISTRO (US 01)
+
+
+class RegistroView(APIView):
+    """
+    POST /api/auth/register/
+
+    Registra un nuevo usuario.
+    """
+
+    permission_classes = []
 
     def post(self, request):
-        nuevo_producto = request.data
-        return Response(
-            {"message": "Producto creado con éxito", "data": nuevo_producto}, 
-            status=status.HTTP_201_CREATED
-        )
+
+        serializer = UsuarioCreateSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        usuario = serializer.save()
+
+        return Response({
+            'id_usuario': usuario.id_usuario,
+            'nombre': usuario.nombre,
+            'apellido': usuario.apellido,
+            'email': usuario.email,
+            'rol': usuario.rol,
+            'mensaje': 'Registro exitoso'
+        }, status=status.HTTP_201_CREATED)
+    
+
+# LOGIN (US 02)
+
+class LoginView(APIView):
+
+    permission_classes = []
+
+    def post(self, request):
+
+        serializer = LoginSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        email = serializer.validated_data['email']
+        password = serializer.validated_data['password']
+
+        usuario = Usuario.objects.filter(email=email).first()
+
+        # Usuario no registrado
+        if not usuario:
+            return Response({
+                'error': 'Usuario no registrado'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Contraseña incorrecta
+        if not check_password(password, usuario.password):
+            return Response({
+                'error': 'Credenciales incorrectas'
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
+        
+        return Response({
+            'id_usuario': usuario.id_usuario,
+            'nombre': usuario.nombre,
+            'apellido': usuario.apellido,
+            'email': usuario.email,
+            'rol': usuario.rol,
+            'mensaje': 'Login exitoso'
+        }, status=status.HTTP_200_OK)
+    
+
+# CRUD COMPLETO
+
 class UsuarioViewSet(viewsets.ModelViewSet):
     """
     CRUD completo para Usuario.
@@ -38,6 +119,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     PATCH  /api/usuarios/{id}/     → actualizar parcial
     DELETE /api/usuarios/{id}/     → eliminar
     """
+
     queryset = Usuario.objects.all()
 
     def get_serializer_class(self):
@@ -59,6 +141,7 @@ class ProductoViewSet(viewsets.ModelViewSet):
     GET    /api/productos/?search=term  → filtrar por nombre
     GET    /api/productos/?vendedor=id  → filtrar por vendedor
     """
+
     queryset = Producto.objects.select_related('id_usuario').all()
     serializer_class = ProductoSerializer
 
@@ -66,11 +149,34 @@ class ProductoViewSet(viewsets.ModelViewSet):
         qs = super().get_queryset()
         search   = self.request.query_params.get('search')
         vendedor = self.request.query_params.get('vendedor')
+        
+        # la descripción (que funciona como filtro de categoría/palabra clave)
         if search:
-            qs = qs.filter(nombre__icontains=search)
+            # Filtra si el término está en el nombre O en la descripción
+            qs = qs.filter(
+                models.Q(nombre__icontains=search) | 
+                models.Q(descripcion__icontains=search)
+            )
         if vendedor:
             qs = qs.filter(id_usuario=vendedor)
         return qs
+
+    #  método para ver el detalle y evaluar la disponibilidad o si el producto está agotado
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        
+        data = serializer.data
+        
+        # Evaluamos el stock para definir la disponibilidad
+        if instance.stock > 0:
+            data['disponibilidad'] = "Disponible"
+            data['estado_stock'] = f"Hay {instance.stock} unidades en inventario."
+        else:
+            data['disponibilidad'] = "Agotado"
+            data['estado_stock'] = "El producto no se encuentra disponible momentáneamente."
+            
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class CarritoViewSet(viewsets.ModelViewSet):
@@ -90,6 +196,7 @@ class CarritoViewSet(viewsets.ModelViewSet):
     POST   /api/carritos/{id}/vaciar/                → vaciar carrito
     POST   /api/carritos/{id}/confirmar/             → generar OrdenCompra
     """
+
     queryset = Carrito.objects.select_related('id_usuario').prefetch_related(
         'detalles__id_producto'
     ).all()
@@ -208,6 +315,7 @@ class OrdenCompraViewSet(viewsets.ModelViewSet):
     DELETE /api/ordenes/{id}/  → eliminar
     GET    /api/ordenes/?usuario=id → filtrar por usuario
     """
+
     queryset = OrdenCompra.objects.select_related('id_usuario').prefetch_related(
         'detalles__id_producto'
     ).all()
@@ -219,6 +327,31 @@ class OrdenCompraViewSet(viewsets.ModelViewSet):
         if usuario:
             qs = qs.filter(id_usuario=usuario)
         return qs
+
+    #  Ver el detalle completo de una compra específica con sus productos
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        
+        
+        detalles = instance.detalles.all()
+        detalles_data = []
+        for d in detalles:
+            detalles_data.append({
+                "id_detalle": d.id_detalle,
+                "id_producto": d.id_producto_id,
+                "nombre_producto": d.id_producto.nombre if d.id_producto else "Producto Eliminado o no disponible",
+                "cantidad": d.cantidad,
+                "precio_unitario": str(d.precio_unitario),
+                "subtotal": str(d.subtotal)
+            })
+            
+        
+        respuesta = {
+            "orden": serializer.data,
+            "items_comprados": detalles_data
+        }
+        return Response(respuesta, status=status.HTTP_200_OK)
 
 
 class DetalleOrdenViewSet(viewsets.ModelViewSet):

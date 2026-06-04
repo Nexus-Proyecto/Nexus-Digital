@@ -1,0 +1,16 @@
+nav.navbar .form-control {
+  background-color: transparent;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+nav.navbar .form-control::placeholder {
+  color: var(--color-secondary);
+}
+
+nav.navbar .form-control:focus {
+  background-color: transparent;
+  border-color: var(--color-accent);
+  color: var(--color-primary);
+  box-shadow: 0 0 0 0.2rem rgba(117, 177, 252, 0.2);
+}

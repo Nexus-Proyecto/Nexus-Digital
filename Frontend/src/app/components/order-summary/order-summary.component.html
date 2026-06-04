@@ -1,0 +1,36 @@
+<div class="order-summary-container" *ngIf="order">
+  <div class="success-icon">✅</div>
+  <h2 class="success-title">¡Gracias por tu compra!</h2>
+  <p class="order-date">{{ order.date | date:'medium' }}</p>
+
+  <div class="order-details">
+    <h3 class="section-title">Detalles de la orden</h3>
+    <div class="detail-row">
+      <span>Cliente:</span>
+      <span>{{ order.customer.fullName }}</span>
+    </div>
+    <div class="detail-row">
+      <span>Email:</span>
+      <span>{{ order.customer.email }}</span>
+    </div>
+    <div class="detail-row">
+      <span>Dirección:</span>
+      <span>{{ order.customer.address }}, {{ order.customer.city }} ({{ order.customer.zipCode }})</span>
+    </div>
+  </div>
+
+  <div class="items-list">
+    <h3 class="section-title">Productos comprados</h3>
+    <div *ngFor="let item of order.items" class="item-row">
+      <span>{{ item.name }} x{{ item.quantity }}</span>
+      <span>${{ item.price * item.quantity | number:'1.2-2' }}</span>
+    </div>
+  </div>
+
+  <div class="order-total">
+    <span>Total pagado:</span>
+    <span>${{ order.total | number:'1.2-2' }}</span>
+  </div>
+
+  <a routerLink="/productos" class="continue-btn">Seguir comprando</a>
+</div>

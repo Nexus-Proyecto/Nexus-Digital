@@ -1,0 +1,267 @@
+<main class="vendedor-container container py-5">
+  <!-- Botón de regreso -->
+  <button class="btn btn-secondary mb-4 back-btn d-flex align-items-center" (click)="volverAlDashboard()">
+    <span class="material-icons me-1">arrow_back</span>
+    Volver al Dashboard
+  </button>
+
+  <!-- Encabezado de la página -->
+  <div class="row align-items-center mb-4">
+    <div class="col-md-8">
+      <h1 class="page-title mb-1 text-white fw-bold">Gestión de Mis Productos</h1>
+      <p class="page-subtitle mb-0 text-white-50">Administra el inventario de tus productos publicados en Nexus Digital</p>
+    </div>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+      <button class="btn btn-primary btn-lg add-btn px-4 d-flex align-items-center justify-content-center w-100 w-md-auto ms-auto" (click)="abrirModalCrear()">
+        <span class="material-icons me-2">add_circle</span>
+        Nuevo Producto
+      </button>
+    </div>
+  </div>
+
+  <!-- Estadísticas rápidas -->
+  <div class="row mb-4">
+    <div class="col-md-4 mb-3 mb-md-0">
+      <div class="card stats-card shadow-sm border-0 py-3 text-center">
+        <div class="card-body">
+          <span class="material-icons stats-icon text-muted">inventory_2</span>
+          <h3 class="mt-2 mb-1 text-dark-blue fw-bold">{{ totalProductos }}</h3>
+          <p class="mb-0 text-muted font-weight-500">Total Publicados</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3 mb-md-0">
+      <div class="card stats-card shadow-sm border-0 py-3 text-center">
+        <div class="card-body">
+          <span class="material-icons stats-icon text-success">check_circle</span>
+          <h3 class="mt-2 mb-1 text-success fw-bold">{{ enStock }}</h3>
+          <p class="mb-0 text-muted font-weight-500">En Stock</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card stats-card shadow-sm border-0 py-3 text-center">
+        <div class="card-body">
+          <span class="material-icons stats-icon text-danger">error_outline</span>
+          <h3 class="mt-2 mb-1 text-danger fw-bold">{{ sinStock }}</h3>
+          <p class="mb-0 text-muted font-weight-500">Sin Stock</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alertas de éxito y error -->
+  @if (mensajeExito) {
+    <div class="alert alert-success d-flex align-items-center mb-4 fade show border-0 shadow-sm" role="alert">
+      <span class="material-icons me-2">check_circle_outline</span>
+      <div class="fw-bold">{{ mensajeExito }}</div>
+    </div>
+  }
+  @if (mensajeError) {
+    <div class="alert alert-danger d-flex align-items-center mb-4 fade show border-0 shadow-sm" role="alert">
+      <span class="material-icons me-2">error_outline</span>
+      <div class="fw-bold">{{ mensajeError }}</div>
+    </div>
+  }
+
+  <!-- Barra de Filtros -->
+  <div class="card shadow-sm border-0 mb-4 px-4 py-3 search-card">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0">
+            <span class="material-icons text-muted">search</span>
+          </span>
+          <input type="text" [(ngModel)]="searchQuery" class="form-control border-start-0" placeholder="Buscar por nombre o descripción..." />
+        </div>
+      </div>
+      <div class="col-md-6 text-md-end mt-2 mt-md-0 text-dark-blue fw-medium fs-6">
+        Mostrando {{ productosFiltrados.length }} de {{ totalProductos }} productos
+      </div>
+    </div>
+  </div>
+
+  <!-- Listado de Productos en Tabla -->
+  <div class="card shadow-lg border-0 list-card overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0 custom-table">
+        <thead>
+          <tr>
+            <th scope="col" class="px-4 py-3">Nombre</th>
+            <th scope="col" class="py-3">Descripción</th>
+            <th scope="col" class="py-3 text-end">Precio</th>
+            <th scope="col" class="py-3 text-center">Stock</th>
+            <th scope="col" class="py-3 text-center px-4">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Estado cargando -->
+          @if (cargando) {
+            <tr>
+              <td colspan="5" class="text-center py-5 text-muted fw-medium">
+                <span class="spinner-border spinner-border-sm me-2 text-primary" role="status" aria-hidden="true"></span>
+                Cargando productos de la tienda...
+              </td>
+            </tr>
+          } @else if (productosFiltrados.length === 0) {
+            <!-- Sin resultados -->
+            <tr>
+              <td colspan="5" class="text-center py-5 text-muted">
+                <span class="material-icons fs-1 mb-2 text-muted">inventory</span>
+                <p class="mb-0 fw-bold">No se encontraron productos.</p>
+                <p class="small mb-0 text-muted">Crea un producto nuevo para empezar a vender.</p>
+              </td>
+            </tr>
+          } @else {
+            <!-- Productos cargados -->
+            @for (producto of productosFiltrados; track producto.id_producto) {
+              <tr>
+                <td class="px-4 fw-bold text-dark-blue">{{ producto.nombre }}</td>
+                <td class="text-muted text-truncate" style="max-width: 320px;" title="{{ producto.descripcion }}">
+                  {{ producto.descripcion || 'Sin descripción' }}
+                </td>
+                <td class="text-end fw-bold text-dark-blue">$ {{ producto.precio }}</td>
+                <td class="text-center">
+                  <span class="badge rounded-pill px-3 py-2" [ngClass]="producto.stock > 0 ? 'bg-primary-badge' : 'bg-danger-badge'">
+                    {{ producto.stock > 0 ? producto.stock + ' unid.' : 'Sin Stock' }}
+                  </span>
+                </td>
+                <td class="text-center px-4">
+                  <div class="d-flex justify-content-center gap-2">
+                    <button class="btn btn-outline-primary btn-sm btn-action d-flex align-items-center justify-content-center" (click)="abrirModalEditar(producto)" title="Editar producto">
+                      <span class="material-icons fs-5">edit</span>
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm btn-action d-flex align-items-center justify-content-center" (click)="confirmarEliminacion(producto)" title="Eliminar producto">
+                      <span class="material-icons fs-5">delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- Modal: Crear / Editar Producto -->
+@if (mostrarModalForm) {
+  <div class="modal-backdrop fade show"></div>
+  <div class="modal d-block fade show" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-dark-purple border-bottom-accent text-white px-4 py-3">
+          <h5 class="modal-title fw-bold text-accent">
+            {{ modoEdicion ? 'Editar Producto' : 'Crear Nuevo Producto' }}
+          </h5>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarModalForm()" aria-label="Close"></button>
+        </div>
+        <div class="modal-body px-4 py-4">
+          <form (ngSubmit)="guardarProducto()" novalidate>
+            
+            <!-- Nombre -->
+            <div class="mb-3">
+              <label for="nombre" class="form-label">Nombre del Producto</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0">
+                  <span class="material-icons text-muted">shopping_bag</span>
+                </span>
+                <input type="text" id="nombre" name="nombre" [(ngModel)]="formProducto.nombre" class="form-control border-start-0" [class.is-invalid]="validationErrors['nombre']" placeholder="Ej. Auriculares inalámbricos Bluetooth" [disabled]="guardando" />
+                <div class="invalid-feedback" *ngIf="validationErrors['nombre']">
+                  {{ validationErrors['nombre'] }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="mb-3">
+              <label for="descripcion" class="form-label">Descripción</label>
+              <textarea id="descripcion" name="descripcion" [(ngModel)]="formProducto.descripcion" class="form-control" rows="3" placeholder="Detalles, especificaciones técnicas o características..." [disabled]="guardando"></textarea>
+            </div>
+
+            <div class="row">
+              <!-- Precio -->
+              <div class="col-md-6 mb-3">
+                <label for="precio" class="form-label">Precio ($)</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0">
+                    <span class="material-icons text-muted">attach_money</span>
+                  </span>
+                  <input type="number" id="precio" name="precio" [(ngModel)]="formProducto.precio" class="form-control border-start-0" [class.is-invalid]="validationErrors['precio']" placeholder="0.00" step="0.01" [disabled]="guardando" />
+                  <div class="invalid-feedback" *ngIf="validationErrors['precio']">
+                    {{ validationErrors['precio'] }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Stock -->
+              <div class="col-md-6 mb-3">
+                <label for="stock" class="form-label">Stock inicial</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0">
+                    <span class="material-icons text-muted">inventory</span>
+                  </span>
+                  <input type="number" id="stock" name="stock" [(ngModel)]="formProducto.stock" class="form-control border-start-0" [class.is-invalid]="validationErrors['stock']" placeholder="0" [disabled]="guardando" />
+                  <div class="invalid-feedback" *ngIf="validationErrors['stock']">
+                    {{ validationErrors['stock'] }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones del Modal -->
+            <div class="modal-footer border-top-0 px-0 pb-0 mt-4 d-flex gap-2">
+              <button type="button" class="btn btn-secondary flex-grow-1 py-2.5 modal-btn" (click)="cerrarModalForm()" [disabled]="guardando">
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary flex-grow-1 py-2.5 modal-btn d-flex align-items-center justify-content-center" [disabled]="guardando">
+                @if (guardando) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Guardando...
+                } @else {
+                  <span class="material-icons me-2">save</span>
+                  Guardar Producto
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal: Confirmación de Eliminación -->
+@if (mostrarModalConfirmacion) {
+  <div class="modal-backdrop fade show"></div>
+  <div class="modal d-block fade show" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-dark-purple border-bottom-accent text-white px-4 py-3">
+          <h5 class="modal-title fw-bold text-accent d-flex align-items-center">
+            <span class="material-icons me-2 text-danger">warning</span>
+            Confirmar Eliminación
+          </h5>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarModalConfirmacion()" aria-label="Close"></button>
+        </div>
+        <div class="modal-body px-4 py-4 text-center">
+          <p class="fs-5 mb-2 text-dark-blue fw-bold">¿Estás seguro de que deseas eliminar este producto?</p>
+          <div class="alert alert-warning py-2 mb-3 border-0">
+            <strong class="text-dark-purple">{{ productoSeleccionado?.nombre }}</strong>
+          </div>
+          <p class="text-muted small mb-0">Esta acción no se puede deshacer y el producto desaparecerá inmediatamente del catálogo.</p>
+        </div>
+        <div class="modal-footer border-top-0 px-4 pb-4 pt-0 d-flex gap-2">
+          <button type="button" class="btn btn-secondary flex-grow-1 py-2.5 modal-btn" (click)="cerrarModalConfirmacion()">
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-danger flex-grow-1 py-2.5 modal-btn d-flex align-items-center justify-content-center" (click)="eliminarProducto()">
+            <span class="material-icons me-1 fs-5">delete_forever</span>
+            Sí, Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

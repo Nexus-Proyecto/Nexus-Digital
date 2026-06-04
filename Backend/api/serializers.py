@@ -24,6 +24,13 @@ class UsuarioCreateSerializer(serializers.ModelSerializer):
         model  = Usuario
         fields = ['id_usuario', 'nombre', 'apellido', 'email', 'password', 'password_confirm', 'rol']
 
+    def validate_email(self, value):
+        if Usuario.objects.filter(email=value).exists():
+            raise serializers.ValidationError(
+                'El email ya está registrado.'
+            )
+        return value
+
     def validate(self, data):
         if data['password'] != data.pop('password_confirm'):
             raise serializers.ValidationError({'password': 'Las contraseñas no coinciden.'})
@@ -144,3 +151,9 @@ class OrdenCompraSerializer(serializers.ModelSerializer):
 
     def get_usuario_nombre(self, obj):
         return f"{obj.id_usuario.nombre} {obj.id_usuario.apellido}"
+    
+    
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
