@@ -1,4 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
@@ -9,6 +10,7 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class DashboardUser implements OnInit {
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   opcionesUsuario: string[] = [];
 
@@ -29,6 +31,14 @@ export class DashboardUser implements OnInit {
         'Mis compras',
         'Favoritos'
       ];
+    }
+  }
+
+  seleccionarOpcion(opcion: string): void {
+    if (opcion === 'Mis productos (Crear/Eliminar)') {
+      this.router.navigate(['/mis-productos']);
+    } else {
+      alert(`La opción "${opcion}" estará disponible próximamente.`);
     }
   }
 }

@@ -14,6 +14,11 @@ export const routes: Routes = [
   { path: '', component: Home },
   { path: 'quienes-somos', component: AboutUs },
   { path: 'dashboard', component: MainDashboard },
+  {
+    path: 'mis-productos',
+    canActivate: [authGuard],
+    loadComponent: () => import('./components/vendedor-productos/vendedor-productos').then(m => m.VendedorProductos)
+  },
   { path: 'resultados', component: Resultados },
   { path: 'registro', component: Registro },
   { path: 'login', component: Login },
