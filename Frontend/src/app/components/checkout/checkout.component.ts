@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { 
@@ -38,10 +38,11 @@ export class CheckoutComponent implements OnInit {
   errorMessage = '';
 
   constructor(
-    private cartService: CartService,
-    private fb: FormBuilder,
-    private router: Router,
-    private orderService: OrderService
+    private readonly cartService: CartService,
+    private readonly fb: FormBuilder,
+    private readonly router: Router,
+    private readonly orderService: OrderService,
+    private readonly cdr: ChangeDetectorRef
   ) {
     this.checkoutForm = this.fb.group({
       fullName: ['', [
@@ -77,6 +78,7 @@ export class CheckoutComponent implements OnInit {
     this.cartService.cart$.subscribe(items => {
       this.cartItems = items;
       this.total = this.cartService.getTotal();
+      this.cdr.detectChanges();
     });
 
     if (this.cartItems.length === 0) {
@@ -112,27 +114,51 @@ export class CheckoutComponent implements OnInit {
 
     this.loading = true;
 
-    const orderData: OrderData = {
-      items: this.cartItems,
-      total: this.total,
-      customer: this.checkoutForm.value
-    };
+    const cartId = this.cartService.getActiveCartId();
+    if (!cartId) {
+      this.errorMessage = 'No se encontró un carrito activo para este usuario.';
+      this.loading = false;
+      return;
+    }
 
-    this.orderService.createOrder(orderData).subscribe({
+    this.orderService.confirmCart(cartId).subscribe({
       next: (response) => {
         this.loading = false;
         this.orderSuccess = true;
         this.cartService.clearCart();
+        this.cdr.detectChanges();
         
+        // Mapear la orden devuelta por el backend al estado esperado por el resumen
+        const orderSummaryData = {
+          id_orden: response.id_orden,
+          date: response.fecha,
+          fecha: response.fecha,
+          total: parseFloat(response.total),
+          customer: {
+            fullName: this.checkoutForm.value.fullName,
+            email: this.checkoutForm.value.email,
+            address: this.checkoutForm.value.address,
+            city: this.checkoutForm.value.city,
+            zipCode: this.checkoutForm.value.zipCode,
+            phone: this.checkoutForm.value.phone
+          },
+          items: response.detalles.map((d: any) => ({
+            name: d.producto_nombre,
+            quantity: d.cantidad,
+            price: parseFloat(d.precio_unitario)
+          }))
+        };
+
         setTimeout(() => {
           this.router.navigate(['/order-summary'], {
-            state: { order: orderData, orderId: response.id }
+            state: { order: orderSummaryData }
           });
         }, 2000);
       },
       error: (error) => {
         this.loading = false;
         this.errorMessage = error.message || 'Error al procesar la compra';
+        this.cdr.detectChanges();
       }
     });
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';  // ← para ngModel
 import { ActivatedRoute, Router } from '@angular/router';
@@ -18,10 +18,11 @@ export class ProductoDetalle implements OnInit {
   cantidad: number = 1;  // ← nuevo
 
   constructor(
-    private route: ActivatedRoute,
-    private productoService: ProductoService,
-    private cartService: CartService,  // ← nuevo
-    private router: Router
+    private readonly route: ActivatedRoute,
+    private readonly productoService: ProductoService,
+    private readonly cartService: CartService,  // ← nuevo
+    private readonly router: Router,
+    private readonly cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -29,6 +30,7 @@ export class ProductoDetalle implements OnInit {
     this.productoService.getProductoById(id).subscribe({
       next: (data) => {
         this.producto = data;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al cargar producto:', err);

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -20,8 +20,9 @@ export class Productos implements OnInit {
   ordenPrecio: 'asc' | 'desc' = 'asc';
 
   constructor(
-    private productoService: ProductoService,
-    private router: Router
+    private readonly productoService: ProductoService,
+    private readonly router: Router,
+    private readonly cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -33,6 +34,7 @@ export class Productos implements OnInit {
       next: (data) => {
         this.productos = data;
         this.productosFiltrados = data;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al cargar productos:', err);

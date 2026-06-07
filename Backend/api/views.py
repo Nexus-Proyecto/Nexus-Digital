@@ -202,6 +202,13 @@ class CarritoViewSet(viewsets.ModelViewSet):
     ).all()
     serializer_class = CarritoSerializer
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        usuario = self.request.query_params.get('usuario')
+        if usuario:
+            qs = qs.filter(id_usuario=usuario)
+        return qs
+
     @action(detail=True, methods=['post'], url_path='agregar_item')
     def agregar_item(self, request, pk=None):
         """Agrega un producto al carrito o actualiza su cantidad."""

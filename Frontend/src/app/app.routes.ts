@@ -38,5 +38,5 @@ export const routes: Routes = [
   },
   { path: 'productos', component: Productos },
   { path: 'producto/:id', component: ProductoDetalle },
-  { path: 'historial', component: Historial }
+  { path: 'historial', canActivate: [authGuard], component: Historial }
 ];

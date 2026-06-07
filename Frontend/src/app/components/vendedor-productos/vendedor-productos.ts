@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -18,19 +18,19 @@ export class VendedorProductos implements OnInit {
   private readonly productoService = inject(ProductoService);
   private readonly router = inject(Router);
 
-  productos: Producto[] = [];
-  vendedorId: number | null = null;
-  cargando = false;
-  guardando = false;
+  productos = signal<Producto[]>([]);
+  vendedorId = signal<number | null>(null);
+  cargando = signal(false);
+  guardando = signal(false);
 
   // Mensajes de feedback
-  mensajeExito = '';
-  mensajeError = '';
+  mensajeExito = signal('');
+  mensajeError = signal('');
 
   // Control del modal de formulario
-  mostrarModalForm = false;
-  modoEdicion = false;
-  productoSeleccionado: Producto | null = null;
+  mostrarModalForm = signal(false);
+  modoEdicion = signal(false);
+  productoSeleccionado = signal<Producto | null>(null);
 
   formProducto = {
     nombre: '',
@@ -42,10 +42,10 @@ export class VendedorProductos implements OnInit {
   validationErrors: { [key: string]: string } = {};
 
   // Control del modal de confirmación de eliminación
-  mostrarModalConfirmacion = false;
+  mostrarModalConfirmacion = signal(false);
 
   // Filtro de búsqueda
-  searchQuery = '';
+  searchQuery = signal('');
 
   ngOnInit(): void {
     const user = this.authService.currentUser();
@@ -59,7 +59,7 @@ export class VendedorProductos implements OnInit {
       return;
     }
 
-    this.vendedorId = user.id_usuario;
+    this.vendedorId.set(user.id_usuario);
     this.cargarProductos();
   }
 
@@ -67,18 +67,22 @@ export class VendedorProductos implements OnInit {
    * Carga los productos del vendedor actual
    */
   cargarProductos(): void {
-    if (this.vendedorId === null) return;
+    const vId = this.vendedorId();
+    if (vId === null) return;
 
-    this.cargando = true;
-    this.productoService.getProductosPorVendedor(this.vendedorId).subscribe({
+    this.cargando.set(true);
+    console.log('DEBUG [VendedorProductos]: Iniciando cargarProductos() para vendedorId:', vId);
+    this.productoService.getProductosPorVendedor(vId).subscribe({
       next: (data) => {
-        this.productos = data;
-        this.cargando = false;
+        console.log('DEBUG [VendedorProductos]: getProductosPorVendedor exitoso. Datos:', data);
+        this.productos.set(data);
+        this.cargando.set(false);
+        console.log('DEBUG [VendedorProductos]: cargando = false. Cantidad productos:', this.productos().length);
       },
       error: (err) => {
-        console.error('Error al cargar productos del vendedor:', err);
-        this.mensajeError = 'No se pudieron cargar los productos. Intenta de nuevo.';
-        this.cargando = false;
+        console.error('DEBUG [VendedorProductos]: Error en getProductosPorVendedor:', err);
+        this.mensajeError.set('No se pudieron cargar los productos. Intenta de nuevo.');
+        this.cargando.set(false);
       }
     });
   }
@@ -86,35 +90,29 @@ export class VendedorProductos implements OnInit {
   /**
    * Filtrado en cliente de los productos cargados
    */
-  get productosFiltrados(): Producto[] {
-    if (!this.searchQuery.trim()) {
-      return this.productos;
+  readonly productosFiltrados = computed(() => {
+    const query = this.searchQuery().trim().toLowerCase();
+    const list = this.productos();
+    if (!query) {
+      return list;
     }
-    return this.productos.filter(p =>
-      p.nombre.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-      (p.descripcion && p.descripcion.toLowerCase().includes(this.searchQuery.toLowerCase()))
+    return list.filter(p =>
+      p.nombre.toLowerCase().includes(query) ||
+      (p.descripcion && p.descripcion.toLowerCase().includes(query))
     );
-  }
+  });
 
-  // Getters para estadísticas
-  get totalProductos(): number {
-    return this.productos.length;
-  }
-
-  get enStock(): number {
-    return this.productos.filter(p => p.stock > 0).length;
-  }
-
-  get sinStock(): number {
-    return this.productos.filter(p => p.stock === 0).length;
-  }
+  // Getters/Computeds para estadísticas
+  readonly totalProductos = computed(() => this.productos().length);
+  readonly enStock = computed(() => this.productos().filter(p => p.stock > 0).length);
+  readonly sinStock = computed(() => this.productos().filter(p => p.stock === 0).length);
 
   /**
    * Inicializa el formulario para la creación de un producto
    */
   abrirModalCrear(): void {
-    this.modoEdicion = false;
-    this.productoSeleccionado = null;
+    this.modoEdicion.set(false);
+    this.productoSeleccionado.set(null);
     this.formProducto = {
       nombre: '',
       descripcion: '',
@@ -122,15 +120,15 @@ export class VendedorProductos implements OnInit {
       stock: 0
     };
     this.validationErrors = {};
-    this.mostrarModalForm = true;
+    this.mostrarModalForm.set(true);
   }
 
   /**
    * Inicializa el formulario para la edición de un producto existente
    */
   abrirModalEditar(producto: Producto): void {
-    this.modoEdicion = true;
-    this.productoSeleccionado = producto;
+    this.modoEdicion.set(true);
+    this.productoSeleccionado.set(producto);
     this.formProducto = {
       nombre: producto.nombre,
       descripcion: producto.descripcion || '',
@@ -138,11 +136,11 @@ export class VendedorProductos implements OnInit {
       stock: producto.stock
     };
     this.validationErrors = {};
-    this.mostrarModalForm = true;
+    this.mostrarModalForm.set(true);
   }
 
   cerrarModalForm(): void {
-    this.mostrarModalForm = false;
+    this.mostrarModalForm.set(false);
     this.validationErrors = {};
   }
 
@@ -175,11 +173,12 @@ export class VendedorProductos implements OnInit {
       return;
     }
 
-    this.guardando = true;
-    this.mensajeError = '';
-    this.mensajeExito = '';
+    this.guardando.set(true);
+    this.mensajeError.set('');
+    this.mensajeExito.set('');
 
-    if (this.modoEdicion && this.productoSeleccionado) {
+    const seleccionado = this.productoSeleccionado();
+    if (this.modoEdicion() && seleccionado) {
       // Editar
       const cambios: Partial<Producto> = {
         nombre: this.formProducto.nombre.trim(),
@@ -188,18 +187,18 @@ export class VendedorProductos implements OnInit {
         stock: this.formProducto.stock
       };
 
-      this.productoService.actualizarProducto(this.productoSeleccionado.id_producto, cambios).subscribe({
+      this.productoService.actualizarProducto(seleccionado.id_producto, cambios).subscribe({
         next: (res) => {
-          this.mensajeExito = 'Producto actualizado exitosamente.';
+          this.mensajeExito.set('Producto actualizado exitosamente.');
           this.cargarProductos();
           this.cerrarModalForm();
-          this.guardando = false;
+          this.guardando.set(false);
           this.mostrarMensajeTemporal();
         },
         error: (err) => {
           console.error('Error al editar producto:', err);
-          this.mensajeError = 'No se pudo actualizar el producto en el servidor.';
-          this.guardando = false;
+          this.mensajeError.set('No se pudo actualizar el producto en el servidor.');
+          this.guardando.set(false);
         }
       });
     } else {
@@ -209,21 +208,23 @@ export class VendedorProductos implements OnInit {
         descripcion: this.formProducto.descripcion.trim(),
         precio: this.formProducto.precio,
         stock: this.formProducto.stock,
-        id_usuario: this.vendedorId!
+        id_usuario: this.vendedorId()!
       };
 
+      console.log('DEBUG [VendedorProductos]: Enviando crearProducto() con:', nuevoProducto);
       this.productoService.crearProducto(nuevoProducto).subscribe({
         next: (res) => {
-          this.mensajeExito = 'Producto creado exitosamente.';
+          console.log('DEBUG [VendedorProductos]: crearProducto exitoso. Respuesta:', res);
+          this.mensajeExito.set('Producto creado exitosamente.');
           this.cargarProductos();
           this.cerrarModalForm();
-          this.guardando = false;
+          this.guardando.set(false);
           this.mostrarMensajeTemporal();
         },
         error: (err) => {
-          console.error('Error al crear producto:', err);
-          this.mensajeError = 'No se pudo guardar el producto en el servidor.';
-          this.guardando = false;
+          console.error('DEBUG [VendedorProductos]: Error al crear producto:', err);
+          this.mensajeError.set('No se pudo guardar el producto en el servidor.');
+          this.guardando.set(false);
         }
       });
     }
@@ -233,34 +234,35 @@ export class VendedorProductos implements OnInit {
    * Abre modal de confirmación de borrado
    */
   confirmarEliminacion(producto: Producto): void {
-    this.productoSeleccionado = producto;
-    this.mostrarModalConfirmacion = true;
+    this.productoSeleccionado.set(producto);
+    this.mostrarModalConfirmacion.set(true);
   }
 
   cerrarModalConfirmacion(): void {
-    this.mostrarModalConfirmacion = false;
-    this.productoSeleccionado = null;
+    this.mostrarModalConfirmacion.set(false);
+    this.productoSeleccionado.set(null);
   }
 
   /**
    * Elimina el producto seleccionado
    */
   eliminarProducto(): void {
-    if (!this.productoSeleccionado) return;
+    const seleccionado = this.productoSeleccionado();
+    if (!seleccionado) return;
 
-    this.mensajeError = '';
-    this.mensajeExito = '';
+    this.mensajeError.set('');
+    this.mensajeExito.set('');
 
-    this.productoService.eliminarProducto(this.productoSeleccionado.id_producto).subscribe({
+    this.productoService.eliminarProducto(seleccionado.id_producto).subscribe({
       next: () => {
-        this.mensajeExito = 'Producto eliminado exitosamente.';
+        this.mensajeExito.set('Producto eliminado exitosamente.');
         this.cargarProductos();
         this.cerrarModalConfirmacion();
         this.mostrarMensajeTemporal();
       },
       error: (err) => {
         console.error('Error al eliminar producto:', err);
-        this.mensajeError = 'No se pudo eliminar el producto en el servidor.';
+        this.mensajeError.set('No se pudo eliminar el producto en el servidor.');
         this.cerrarModalConfirmacion();
       }
     });
@@ -271,7 +273,7 @@ export class VendedorProductos implements OnInit {
    */
   mostrarMensajeTemporal(): void {
     setTimeout(() => {
-      this.mensajeExito = '';
+      this.mensajeExito.set('');
     }, 4000);
   }
 
