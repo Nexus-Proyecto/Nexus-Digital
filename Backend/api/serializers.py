@@ -47,7 +47,7 @@ class UsuarioCreateSerializer(serializers.ModelSerializer):
 
 class ProductoSerializer(serializers.ModelSerializer):
     vendedor_nombre = serializers.SerializerMethodField()
-
+    precio = serializers.FloatField()
     class Meta:
         model  = Producto
         fields = [
