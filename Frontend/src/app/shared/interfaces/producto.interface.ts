@@ -5,4 +5,6 @@ export interface Producto {
   precio: number;
   stock: number;
   id_usuario: number;
+  disponibilidad?: string;
+  estado_stock?: string;
 }

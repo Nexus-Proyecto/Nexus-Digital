@@ -18,12 +18,16 @@
         </p>
 
         <p class="card-text">
-          <span *ngIf="producto.stock > 0">
-            Stock disponible: {{ producto.stock }}
+          <strong>Disponibilidad:</strong> 
+          <span [class.text-success]="producto.disponibilidad === 'Disponible'" 
+                [class.text-danger]="producto.disponibilidad !== 'Disponible'"
+                class="fw-bold">
+            {{ producto.disponibilidad || (producto.stock > 0 ? 'Disponible' : 'Agotado') }}
           </span>
-          <span *ngIf="producto.stock === 0" class="text-danger">
-            ⚠️ Producto agotado
-          </span>
+        </p>
+
+        <p class="card-text text-muted">
+          {{ producto.estado_stock || (producto.stock > 0 ? 'Hay ' + producto.stock + ' unidades en inventario.' : 'El producto no se encuentra disponible momentáneamente.') }}
         </p>
 
         <div class="mt-3" *ngIf="producto.stock > 0">

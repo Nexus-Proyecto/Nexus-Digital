@@ -1,15 +1,35 @@
-<h2>Panel Usuario</h2>
-
-<div class="dashboard-container">
-
-  @for (opcion of opcionesUsuario; track opcion) {
-
-    <div class="card" (click)="seleccionarOpcion(opcion)">
-
-      <h3>{{ opcion }}</h3>
-
+<div class="container py-4">
+  <div class="row mb-4">
+    <div class="col-12 text-center">
+      <h2 class="panel-title fw-bold mb-2">Panel de Control</h2>
+      <p class="text-muted fs-6">Selecciona una opción para gestionar tu cuenta o ver tu actividad</p>
     </div>
+  </div>
 
-  }
-
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 justify-content-center">
+    @for (opcion of opcionesUsuario; track opcion.titulo) {
+      <div class="col d-flex">
+        <div class="card dashboard-card shadow-sm border-0 w-100 p-4 text-center d-flex flex-column justify-content-between align-items-center" (click)="seleccionarOpcion(opcion)">
+          <div class="card-top d-flex flex-column align-items-center">
+            <!-- Icono con círculo de fondo -->
+            <div class="icon-circle mb-3 d-flex align-items-center justify-content-center" [ngClass]="opcion.colorClass">
+              <span class="material-icons md-36">{{ opcion.icono }}</span>
+            </div>
+            
+            <!-- Título de la tarjeta -->
+            <h4 class="card-title fw-bold text-dark-blue mb-2">{{ opcion.titulo }}</h4>
+            
+            <!-- Descripción de la tarjeta -->
+            <p class="card-text text-muted mb-4 px-2">{{ opcion.descripcion }}</p>
+          </div>
+          
+          <!-- Enlace de acción -->
+          <div class="action-link d-flex align-items-center justify-content-center fw-semibold text-primary mt-auto">
+            <span>Ingresar</span>
+            <span class="material-icons ms-1 fs-5">arrow_forward</span>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
 </div>

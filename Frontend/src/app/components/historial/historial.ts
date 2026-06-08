@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { OrderService } from '../../core/services/order.service';
-import { Orden } from '../../shared/interfaces/orden.interface'
+import { AuthService } from '../../services/auth.service';
+import { Orden } from '../../shared/interfaces/orden.interface';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -11,35 +12,43 @@ import { CommonModule } from '@angular/common';
   styleUrl: './historial.css',
 })
 export class Historial implements OnInit {
+  private readonly orderService = inject(OrderService);
+  private readonly authService = inject(AuthService);
+  private readonly cdr = inject(ChangeDetectorRef);
+
   ordenes: Orden[] = [];
   ordenSeleccionada: Orden | null = null;
 
-  constructor(private orderService: OrderService) { }
-
   ngOnInit(): void {
-    // Cuando carga el componente, pedimos el historial
     this.cargarHistorial();
   }
 
   cargarHistorial(): void {
-    this.orderService.getOrderHistory().subscribe({
+    const user = this.authService.currentUser();
+    if (!user) {
+      console.warn('No hay usuario logueado para cargar el historial de compras.');
+      return;
+    }
+
+    this.orderService.getOrderHistory(user.id_usuario).subscribe({
       next: (res) => {
-        this.ordenes = res; // Llenamos la lista
+        this.ordenes = res;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al traer el historial', err);
+        this.cdr.detectChanges();
       }
     });
   }
 
-  // Lógica para CA-02: Al hacer clic, mostramos el detalle
   verDetalle(orden: Orden): void {
     this.ordenSeleccionada = orden;
+    this.cdr.detectChanges();
   }
 
-  // Para cerrar el detalle si lo desea
   cerrarDetalle(): void {
     this.ordenSeleccionada = null;
+    this.cdr.detectChanges();
   }
-
 }
