@@ -1,58 +1,49 @@
 .dashboard-page {
-
   min-height: 100vh;
-
-  padding: 40px;
-
-  background-color: #f4f7fb;
-
+  padding: 40px 20px;
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  display: flex;
+  flex-direction: column;
 }
 
 .dashboard-header {
-
-  margin-bottom: 40px;
-
+  margin-bottom: 30px;
 }
 
-h1 {
-
-  font-size: 42px;
-
-  margin-bottom: 10px;
-
+.dashboard-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -1px;
 }
 
-.rol {
-
-  font-size: 18px;
-
-  margin-bottom: 20px;
-
+.rol.badge {
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 30px;
+  background-color: #7c3aed !important; /* purple theme accent */
+  box-shadow: 0 4px 10px rgba(124, 58, 237, 0.2);
 }
 
 button {
-
-color: #f4f7fb;
-
-  padding: 12px 20px;
-
+  color: #ffffff;
+  padding: 12px 24px;
   border: none;
-
-  border-radius: 15px;
-
+  border-radius: 12px;
   cursor: pointer;
-
   font-size: 16px;
-
-  transition: 0.3s;
-  
-  background: linear-gradient(135deg, #0d6efd, #0a58ca);
-  
-
+  font-weight: 600;
+  transition: all 0.2s ease;
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
 }
 
 button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4);
+}
 
-  transform: scale(1.03);
-
+button:active {
+  transform: translateY(0);
 }

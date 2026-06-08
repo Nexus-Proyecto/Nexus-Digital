@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { ProductoService } from '../../core/services/producto.service';
@@ -14,46 +14,42 @@ import { Producto } from '../../shared/interfaces/producto.interface';
 })
 export class Resultados implements OnInit {
   searchQuery: string = '';
-
-  productos: Producto[] = [];
-resultados: Producto[] = [];
-
+  resultados: Producto[] = [];
 
   constructor(
-    private route: ActivatedRoute,
-    private productoService: ProductoService
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly productoService: ProductoService,
+    private readonly cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      this.searchQuery = params['q'] || '';
+      this.buscarProductos();
+      this.cdr.detectChanges();
+    });
+  }
 
-    this.productoService.getProductos().subscribe({
-      next: (productos) => {
+  buscarProductos() {
+    if (!this.searchQuery.trim()) {
+      this.resultados = [];
+      this.cdr.detectChanges();
+      return;
+    }
 
-        this.productos = productos;
-
-        this.route.queryParams.subscribe(params => {
-          this.searchQuery = params['q'] || '';
-
-          this.filtrarProductos();
-        });
-
+    this.productoService.buscarPorNombre(this.searchQuery).subscribe({
+      next: (data) => {
+        this.resultados = data;
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error al cargar productos:', err);
+        console.error('Error al realizar búsqueda en backend:', err);
       }
     });
-
   }
 
-  filtrarProductos() {
-
-    const texto = this.searchQuery.toLowerCase().trim();
-
-    this.resultados = this.productos.filter(producto =>
-      producto.nombre.toLowerCase().includes(texto) ||
-      producto.descripcion.toLowerCase().includes(texto)
-    );
-
+  verDetalle(id: number) {
+    this.router.navigate(['/producto', id]);
   }
-
 }

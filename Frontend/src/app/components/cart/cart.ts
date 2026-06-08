@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';  // ← Agregué Router
+import { RouterModule, Router } from '@angular/router';  
 import { CartService } from '../../core/services/cart.service';
 import { CartItem } from '../../shared/interfaces/cart-item.interface';
 
@@ -15,17 +15,22 @@ export class Cart implements OnInit {
   cart: CartItem[] = [];
   message: string = '';
 
-  // ← Agregué private router: Router acá
-  constructor(private cartService: CartService, private router: Router) {}
+  constructor(
+    private readonly cartService: CartService, 
+    private readonly router: Router,
+    private readonly cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.cartService.cart$.subscribe(items => {
       this.cart = items;
+      this.cdr.detectChanges();
     });
   }
 
   loadCart(): void {
     this.cart = this.cartService.getCart();
+    this.cdr.detectChanges();
   }
 
   updateQuantity(id: number, quantity: number): void {
@@ -47,18 +52,23 @@ export class Cart implements OnInit {
   clearCart(): void {
     this.cartService.clearCart();
     this.message = 'Carrito vaciado';
-    setTimeout(() => this.message = '', 2000);
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.message = '';
+      this.cdr.detectChanges();
+    }, 2000);
   }
 
   confirmPurchase(): void {
     if (this.cart.length === 0) {
       this.message = 'El carrito está vacío';
+      this.cdr.detectChanges();
       return;
     }
     this.message = '';
+    this.cdr.detectChanges();
   }
 
-  // ← Método nuevo para debuggear
   goToCheckout(): void {
     console.log('🔴 goToCheckout llamado');
     this.router.navigate(['/checkout']).then(success => {
