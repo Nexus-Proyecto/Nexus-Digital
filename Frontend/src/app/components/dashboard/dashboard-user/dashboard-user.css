@@ -1,26 +1,107 @@
-.dashboard-container {
-
-  display: flex;
-  gap: 20px;
-  margin-top: 20px;
-
+.panel-title {
+  color: #1a253c;
+  font-size: 2rem;
+  letter-spacing: -0.5px;
 }
 
-.card {
-
-  border: 1px solid #ccc;
-  padding: 20px;
-  border-radius: 10px;
-  width: 200px;
-  cursor: pointer;
+.dashboard-card {
+  border-radius: 16px;
   background-color: #ffffff;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.03) !important;
+  min-height: 280px;
 }
 
-.card:hover {
+.dashboard-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 32px rgba(46, 26, 71, 0.12);
+  border-color: rgba(124, 58, 237, 0.2) !important;
+}
 
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(12, 74, 141, 0.2);
+.icon-circle {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
 
+.dashboard-card:hover .icon-circle {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.material-icons.md-36 {
+  font-size: 32px;
+}
+
+/* Color Classes for Categories */
+.card-perfil {
+  background-color: #f3e8ff;
+  color: #7c3aed;
+}
+
+.card-ventas {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.card-productos {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.card-compras {
+  background-color: #e0e7ff;
+  color: #4f46e5;
+}
+
+.card-favoritos {
+  background-color: #ffe4e6;
+  color: #e11d48;
+}
+
+/* Typography and Action */
+.card-title {
+  color: #1e293b;
+  font-size: 1.25rem;
+}
+
+.card-text {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+.action-link {
+  color: #7c3aed;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+}
+
+.dashboard-card:hover .action-link {
+  color: #5b21b6;
+}
+
+.action-link span.material-icons {
+  transition: transform 0.2s ease;
+}
+
+.dashboard-card:hover .action-link span.material-icons {
+  transform: translateX(4px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .panel-title {
+    font-size: 1.75rem;
+  }
+  
+  .dashboard-card {
+    min-height: auto;
+    padding: 1.5rem !important;
+  }
 }
