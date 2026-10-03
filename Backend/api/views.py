@@ -1,4 +1,3 @@
-
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.decorators import action
@@ -6,6 +5,8 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import check_password
 from rest_framework import filters
+from django.db import models
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import (
     Usuario,
@@ -95,13 +96,18 @@ class LoginView(APIView):
                 'error': 'Credenciales incorrectas'
             }, status=status.HTTP_401_UNAUTHORIZED)
 
-        
+        refresh = RefreshToken.for_user(usuario)
+        refresh['rol'] = usuario.rol
+        refresh['email'] = usuario.email
+
         return Response({
             'id_usuario': usuario.id_usuario,
             'nombre': usuario.nombre,
             'apellido': usuario.apellido,
             'email': usuario.email,
             'rol': usuario.rol,
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
             'mensaje': 'Login exitoso'
         }, status=status.HTTP_200_OK)
     
