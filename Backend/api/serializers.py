@@ -19,6 +19,7 @@ class UsuarioCreateSerializer(serializers.ModelSerializer):
     """Creación/registro: acepta password en texto plano y lo hashea."""
     password         = serializers.CharField(write_only=True, min_length=8)
     password_confirm = serializers.CharField(write_only=True)
+    rol              = serializers.ChoiceField(choices=['comprador', 'vendedor'], default='comprador')
 
     class Meta:
         model  = Usuario
