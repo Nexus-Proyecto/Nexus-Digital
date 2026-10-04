@@ -1,3 +1,4 @@
+import logging
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.decorators import action
@@ -27,7 +28,7 @@ from .serializers import (
     OrdenCompraSerializer,
     DetalleOrdenSerializer,
 )
-
+logger = logging.getLogger('security')
 
 # REGISTRO (US 01)
 
@@ -86,12 +87,19 @@ class LoginView(APIView):
 
         # Usuario no registrado
         if not usuario:
+            logger.warning(
+        "Inicio de sesión fallido | accion=login | recurso=autenticacion | resultado=DENEGADO"
+    )
             return Response({
                 'error': 'Usuario no registrado'
             }, status=status.HTTP_404_NOT_FOUND)
 
         # Contraseña incorrecta
         if not check_password(password, usuario.password):
+            logger.warning(
+        "Inicio de sesión fallido | usuario=%s | accion=login | recurso=autenticacion | resultado=DENEGADO",
+        usuario.id_usuario
+    )
             return Response({
                 'error': 'Credenciales incorrectas'
             }, status=status.HTTP_401_UNAUTHORIZED)
