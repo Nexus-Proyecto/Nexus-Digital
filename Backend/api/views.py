@@ -7,7 +7,10 @@ from django.contrib.auth.hashers import check_password
 from rest_framework import filters
 from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.throttling import ScopedRateThrottle
 
+from .permissions import IsAdminRole, IsVendedorOrReadOnly, IsOwnerOrAdmin
 from .models import (
     Usuario,
     Producto,
@@ -39,7 +42,9 @@ class RegistroView(APIView):
     Registra un nuevo usuario.
     """
 
-    permission_classes = []
+    permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'register'
 
     def post(self, request):
 
@@ -63,11 +68,13 @@ class RegistroView(APIView):
         }, status=status.HTTP_201_CREATED)
     
 
-# LOGIN (US 02)
+# LOGIN 
 
 class LoginView(APIView):
 
-    permission_classes = []
+    permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'login'
 
     def post(self, request):
 
@@ -117,6 +124,7 @@ class LoginView(APIView):
 class UsuarioViewSet(viewsets.ModelViewSet):
     """
     CRUD completo para Usuario.
+    Requiere rol de Administrador.
 
     GET    /api/usuarios/          → listar
     POST   /api/usuarios/          → crear (requiere password + password_confirm)
@@ -126,6 +134,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     DELETE /api/usuarios/{id}/     → eliminar
     """
 
+    permission_classes = [IsAdminRole]
     queryset = Usuario.objects.all()
 
     def get_serializer_class(self):
@@ -137,19 +146,27 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 class ProductoViewSet(viewsets.ModelViewSet):
     """
     CRUD completo para Producto.
+    Lectura pública. Escritura restringida a vendedores y administradores.
 
-    GET    /api/productos/              → listar todos
-    POST   /api/productos/              → crear producto
-    GET    /api/productos/{id}/         → detalle
-    PUT    /api/productos/{id}/         → actualizar completo
-    PATCH  /api/productos/{id}/         → actualizar parcial
-    DELETE /api/productos/{id}/         → eliminar
-    GET    /api/productos/?search=term  → filtrar por nombre
-    GET    /api/productos/?vendedor=id  → filtrar por vendedor
+    GET    /api/productos-api/              → listar todos
+    POST   /api/productos-api/              → crear producto (vendedor/admin)
+    GET    /api/productos-api/{id}/         → detalle
+    PUT    /api/productos-api/{id}/         → actualizar completo
+    PATCH  /api/productos-api/{id}/         → actualizar parcial
+    DELETE /api/productos-api/{id}/         → eliminar
+    GET    /api/productos-api/?search=term  → filtrar por nombre
+    GET    /api/productos-api/?vendedor=id  → filtrar por vendedor
     """
 
+    permission_classes = [IsVendedorOrReadOnly]
     queryset = Producto.objects.select_related('id_usuario').all()
     serializer_class = ProductoSerializer
+
+    def perform_create(self, serializer):
+        if getattr(self.request.user, 'rol', None) == 'administrador' and 'id_usuario' in serializer.validated_data:
+            serializer.save()
+        else:
+            serializer.save(id_usuario=self.request.user)
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -167,7 +184,7 @@ class ProductoViewSet(viewsets.ModelViewSet):
             qs = qs.filter(id_usuario=vendedor)
         return qs
 
-    #  método para ver el detalle y evaluar la disponibilidad o si el producto está agotado
+    # Método para ver el detalle y evaluar la disponibilidad o si el producto está agotado
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
@@ -203,6 +220,7 @@ class CarritoViewSet(viewsets.ModelViewSet):
     POST   /api/carritos/{id}/confirmar/             → generar OrdenCompra
     """
 
+    permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
     queryset = Carrito.objects.select_related('id_usuario').prefetch_related(
         'detalles__id_producto'
     ).all()
@@ -210,10 +228,19 @@ class CarritoViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        usuario = self.request.query_params.get('usuario')
-        if usuario:
-            qs = qs.filter(id_usuario=usuario)
-        return qs
+        user = self.request.user
+        if getattr(user, 'rol', None) == 'administrador':
+            usuario = self.request.query_params.get('usuario')
+            if usuario:
+                return qs.filter(id_usuario=usuario)
+            return qs
+        return qs.filter(id_usuario=user)
+
+    def perform_create(self, serializer):
+        if getattr(self.request.user, 'rol', None) == 'administrador' and 'id_usuario' in serializer.validated_data:
+            serializer.save()
+        else:
+            serializer.save(id_usuario=self.request.user)
 
     @action(detail=True, methods=['post'], url_path='agregar_item')
     def agregar_item(self, request, pk=None):
@@ -313,8 +340,16 @@ class DetalleCarritoViewSet(viewsets.ModelViewSet):
     PATCH  /api/detalle-carrito/{id}/  → actualizar parcial
     DELETE /api/detalle-carrito/{id}/  → eliminar
     """
+    permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
     queryset = DetalleCarrito.objects.select_related('id_carrito', 'id_producto').all()
     serializer_class = DetalleCarritoSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        user = self.request.user
+        if getattr(user, 'rol', None) == 'administrador':
+            return qs
+        return qs.filter(id_carrito__id_usuario=user)
 
 
 class OrdenCompraViewSet(viewsets.ModelViewSet):
@@ -329,23 +364,32 @@ class OrdenCompraViewSet(viewsets.ModelViewSet):
     GET    /api/ordenes/?usuario=id → filtrar por usuario
     """
 
+    permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
     queryset = OrdenCompra.objects.select_related('id_usuario').prefetch_related(
         'detalles__id_producto'
     ).all()
     serializer_class = OrdenCompraSerializer
 
     def get_queryset(self):
-        qs      = super().get_queryset()
-        usuario = self.request.query_params.get('usuario')
-        if usuario:
-            qs = qs.filter(id_usuario=usuario)
-        return qs
+        qs = super().get_queryset()
+        user = self.request.user
+        if getattr(user, 'rol', None) == 'administrador':
+            usuario = self.request.query_params.get('usuario')
+            if usuario:
+                return qs.filter(id_usuario=usuario)
+            return qs
+        return qs.filter(id_usuario=user)
+
+    def perform_create(self, serializer):
+        if getattr(self.request.user, 'rol', None) == 'administrador' and 'id_usuario' in serializer.validated_data:
+            serializer.save()
+        else:
+            serializer.save(id_usuario=self.request.user)
 
     #  Ver el detalle completo de una compra específica con sus productos
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
-        
         
         detalles = instance.detalles.all()
         detalles_data = []
@@ -359,7 +403,6 @@ class OrdenCompraViewSet(viewsets.ModelViewSet):
                 "subtotal": str(d.subtotal)
             })
             
-        
         respuesta = {
             "orden": serializer.data,
             "items_comprados": detalles_data
@@ -378,5 +421,13 @@ class DetalleOrdenViewSet(viewsets.ModelViewSet):
     PATCH  /api/detalle-orden/{id}/  → actualizar parcial
     DELETE /api/detalle-orden/{id}/  → eliminar
     """
+    permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
     queryset = DetalleOrden.objects.select_related('id_orden', 'id_producto').all()
     serializer_class = DetalleOrdenSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        user = self.request.user
+        if getattr(user, 'rol', None) == 'administrador':
+            return qs
+        return qs.filter(id_orden__id_usuario=user)
