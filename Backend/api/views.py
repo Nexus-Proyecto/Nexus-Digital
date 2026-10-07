@@ -10,6 +10,7 @@ from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.throttling import ScopedRateThrottle
+from rest_framework.exceptions import PermissionDenied
 
 from .permissions import IsAdminRole, IsVendedorOrReadOnly, IsOwnerOrAdmin
 from .models import (
@@ -358,6 +359,13 @@ class DetalleCarritoViewSet(viewsets.ModelViewSet):
         if getattr(user, 'rol', None) == 'administrador':
             return qs
         return qs.filter(id_carrito__id_usuario=user)
+    
+    def perform_create(self, serializer):
+        carrito = serializer.validated_data.get('id_carrito')
+        user = self.request.user
+        if getattr(user, 'rol', None) != 'administrador' and carrito.id_usuario != user:
+            raise PermissionDenied("No podés agregar items a un carrito que no te pertenece.")
+        serializer.save()
 
 
 class OrdenCompraViewSet(viewsets.ModelViewSet):
@@ -439,3 +447,10 @@ class DetalleOrdenViewSet(viewsets.ModelViewSet):
         if getattr(user, 'rol', None) == 'administrador':
             return qs
         return qs.filter(id_orden__id_usuario=user)
+    
+    def perform_create(self, serializer):
+        orden = serializer.validated_data.get('id_orden')
+        user = self.request.user
+        if getattr(user, 'rol', None) != 'administrador' and orden.id_usuario != user:
+            raise PermissionDenied("No podés agregar items a una orden que no te pertenece.")
+        serializer.save()
