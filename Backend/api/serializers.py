@@ -13,7 +13,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
         fields = ['id_usuario', 'nombre', 'apellido', 'email', 'rol']
-        read_only_fields = ['id_usuario']
+        read_only_fields = ['id_usuario', 'rol']
 
 
 
