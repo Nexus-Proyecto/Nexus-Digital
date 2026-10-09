@@ -8,11 +8,13 @@ from .models import Usuario, Producto, Carrito, DetalleCarrito, OrdenCompra, Det
 # ─────────────────────────────────────────
 
 class UsuarioSerializer(serializers.ModelSerializer):
-    """Lectura: nunca expone el password."""
+    """Lectura y actualización de datos básicos del usuario."""
 
     class Meta:
-        model  = Usuario
+        model = Usuario
         fields = ['id_usuario', 'nombre', 'apellido', 'email', 'rol']
+        read_only_fields = ['id_usuario', 'rol']
+
 
 
 class UsuarioCreateSerializer(serializers.ModelSerializer):
