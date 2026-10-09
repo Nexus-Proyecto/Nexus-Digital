@@ -114,12 +114,27 @@ class CarritoSerializer(serializers.ModelSerializer):
     class Meta:
         model  = Carrito
         fields = ['id_carrito', 'id_usuario', 'usuario_nombre', 'estado', 'detalles', 'total']
+        read_only_fields = ['usuario_nombre', 'detalles', 'total']
 
     def get_total(self, obj):
         return sum(d.subtotal for d in obj.detalles.all())
 
     def get_usuario_nombre(self, obj):
         return f"{obj.id_usuario.nombre} {obj.id_usuario.apellido}"
+    def validate_id_usuario(self, value):
+        request = self.context.get('request')
+
+        if (
+            self.instance
+            and request
+            and getattr(request.user, 'rol', None) != 'administrador'
+            and value != self.instance.id_usuario
+        ):
+            raise serializers.ValidationError(
+                'No podés cambiar el propietario del carrito.'
+            )
+
+        return value
 
 
 # ─────────────────────────────────────────
@@ -150,12 +165,27 @@ class OrdenCompraSerializer(serializers.ModelSerializer):
     class Meta:
         model  = OrdenCompra
         fields = ['id_orden', 'id_usuario', 'usuario_nombre', 'fecha', 'total', 'detalles']
-        read_only_fields = ['fecha', 'total']
+        read_only_fields = ['usuario_nombre', 'fecha', 'total', 'detalles']
 
     def get_usuario_nombre(self, obj):
         return f"{obj.id_usuario.nombre} {obj.id_usuario.apellido}"
     
+    def validate_id_usuario(self, value):
+        request = self.context.get('request')
+
+        if (
+            self.instance
+            and request
+            and getattr(request.user, 'rol', None) != 'administrador'
+            and value != self.instance.id_usuario
+        ):
+            raise serializers.ValidationError(
+                'No se puede cambiar el propietario de la orden.'
+            )
+
+        return value
     
+
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()

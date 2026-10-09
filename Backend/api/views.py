@@ -10,6 +10,7 @@ from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.throttling import ScopedRateThrottle
+from rest_framework.exceptions import PermissionDenied
 
 from .permissions import IsAdminRole, IsVendedorOrReadOnly, IsOwnerOrAdmin
 from .models import (
@@ -359,6 +360,17 @@ class DetalleCarritoViewSet(viewsets.ModelViewSet):
             return qs
         return qs.filter(id_carrito__id_usuario=user)
 
+    def perform_create(self, serializer):
+        carrito = serializer.validated_data['id_carrito']
+
+        if (
+            getattr(self.request.user, 'rol', None) != 'administrador'
+            and carrito.id_usuario != self.request.user
+        ):
+            raise PermissionDenied(
+                'No podés agregar productos al carrito de otro usuario.'
+            )
+        serializer.save()
 
 class OrdenCompraViewSet(viewsets.ModelViewSet):
     """
