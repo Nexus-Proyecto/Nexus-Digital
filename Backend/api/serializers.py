@@ -1,5 +1,9 @@
+import re
+
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.password_validation import validate_password as django_validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 from .models import Usuario, Producto, Carrito, DetalleCarrito, OrdenCompra, DetalleOrden
 
 
@@ -32,6 +36,24 @@ class UsuarioCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'El email ya está registrado.'
             )
+        return value
+
+    def validate_password(self, value):
+        try:
+            django_validate_password(value)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(list(exc.messages))
+
+        if not re.search(r'[A-Za-z]', value) or not re.search(r'\d', value):
+            raise serializers.ValidationError(
+                'La contraseña debe ser alfanumérica (incluir letras y números).'
+            )
+
+        if not re.search(r'[^A-Za-z0-9]', value):
+            raise serializers.ValidationError(
+                'La contraseña debe incluir al menos un carácter especial.'
+            )
+
         return value
 
     def validate(self, data):
