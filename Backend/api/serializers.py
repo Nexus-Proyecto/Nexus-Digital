@@ -1,5 +1,9 @@
+import re
+
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.password_validation import validate_password as django_validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 from .models import Usuario, Producto, Carrito, DetalleCarrito, OrdenCompra, DetalleOrden
 
 
@@ -8,17 +12,20 @@ from .models import Usuario, Producto, Carrito, DetalleCarrito, OrdenCompra, Det
 # ─────────────────────────────────────────
 
 class UsuarioSerializer(serializers.ModelSerializer):
-    """Lectura: nunca expone el password."""
+    """Lectura y actualización de datos básicos del usuario."""
 
     class Meta:
-        model  = Usuario
+        model = Usuario
         fields = ['id_usuario', 'nombre', 'apellido', 'email', 'rol']
+        read_only_fields = ['id_usuario', 'rol']
+
 
 
 class UsuarioCreateSerializer(serializers.ModelSerializer):
     """Creación/registro: acepta password en texto plano y lo hashea."""
     password         = serializers.CharField(write_only=True, min_length=8)
     password_confirm = serializers.CharField(write_only=True)
+    rol              = serializers.ChoiceField(choices=['comprador', 'vendedor'], default='comprador')
 
     class Meta:
         model  = Usuario
@@ -29,6 +36,24 @@ class UsuarioCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'El email ya está registrado.'
             )
+        return value
+
+    def validate_password(self, value):
+        try:
+            django_validate_password(value)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(list(exc.messages))
+
+        if not re.search(r'[A-Za-z]', value) or not re.search(r'\d', value):
+            raise serializers.ValidationError(
+                'La contraseña debe ser alfanumérica (incluir letras y números).'
+            )
+
+        if not re.search(r'[^A-Za-z0-9]', value):
+            raise serializers.ValidationError(
+                'La contraseña debe incluir al menos un carácter especial.'
+            )
+
         return value
 
     def validate(self, data):
@@ -47,7 +72,7 @@ class UsuarioCreateSerializer(serializers.ModelSerializer):
 
 class ProductoSerializer(serializers.ModelSerializer):
     vendedor_nombre = serializers.SerializerMethodField()
-
+    precio = serializers.FloatField()
     class Meta:
         model  = Producto
         fields = [
@@ -111,12 +136,27 @@ class CarritoSerializer(serializers.ModelSerializer):
     class Meta:
         model  = Carrito
         fields = ['id_carrito', 'id_usuario', 'usuario_nombre', 'estado', 'detalles', 'total']
+        read_only_fields = ['usuario_nombre', 'detalles', 'total']
 
     def get_total(self, obj):
         return sum(d.subtotal for d in obj.detalles.all())
 
     def get_usuario_nombre(self, obj):
         return f"{obj.id_usuario.nombre} {obj.id_usuario.apellido}"
+    def validate_id_usuario(self, value):
+        request = self.context.get('request')
+
+        if (
+            self.instance
+            and request
+            and getattr(request.user, 'rol', None) != 'administrador'
+            and value != self.instance.id_usuario
+        ):
+            raise serializers.ValidationError(
+                'No podés cambiar el propietario del carrito.'
+            )
+
+        return value
 
 
 # ─────────────────────────────────────────
@@ -147,12 +187,27 @@ class OrdenCompraSerializer(serializers.ModelSerializer):
     class Meta:
         model  = OrdenCompra
         fields = ['id_orden', 'id_usuario', 'usuario_nombre', 'fecha', 'total', 'detalles']
-        read_only_fields = ['fecha', 'total']
+        read_only_fields = ['usuario_nombre', 'fecha', 'total', 'detalles']
 
     def get_usuario_nombre(self, obj):
         return f"{obj.id_usuario.nombre} {obj.id_usuario.apellido}"
     
+    def validate_id_usuario(self, value):
+        request = self.context.get('request')
+
+        if (
+            self.instance
+            and request
+            and getattr(request.user, 'rol', None) != 'administrador'
+            and value != self.instance.id_usuario
+        ):
+            raise serializers.ValidationError(
+                'No se puede cambiar el propietario de la orden.'
+            )
+
+        return value
     
+
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()

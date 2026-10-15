@@ -1,9 +1,10 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import (
     RegistroView,
-    LoginView, 
+    LoginView,
     UsuarioViewSet,
     ProductoViewSet,
     CarritoViewSet,
@@ -24,5 +25,6 @@ router.register(r'detalle-orden',    DetalleOrdenViewSet,  basename='detalle-ord
 urlpatterns = [
     path('auth/register/', RegistroView.as_view()),
     path('auth/login/', LoginView.as_view()),
+    path('auth/token/refresh/', TokenRefreshView.as_view()),
     path('', include(router.urls)),
 ]
