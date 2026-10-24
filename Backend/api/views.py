@@ -151,6 +151,31 @@ class UsuarioViewSet(viewsets.ModelViewSet):
             return UsuarioCreateSerializer
         return UsuarioSerializer
 
+    @action(detail=False, methods=['delete'], url_path='me',
+            permission_classes=[IsAuthenticated])
+    def eliminar_mi_cuenta(self, request):
+        """
+        DELETE /api/usuarios/me/
+        Elimina la cuenta del usuario autenticado.
+        """
+        usuario = request.user
+
+        if getattr(usuario, 'rol', None) == 'administrador':
+            return Response(
+                {'detail': 'Una cuenta de administrador no se puede eliminar desde la app.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        id_usuario = usuario.id_usuario
+        usuario.delete()
+
+        logger.warning(
+            "Cuenta eliminada | usuario=%s | accion=eliminar_cuenta | recurso=usuario | resultado=OK",
+            id_usuario
+        )
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class ProductoViewSet(viewsets.ModelViewSet):
     """
